@@ -1,4 +1,5 @@
-# Geometry
+# UFOGeometry
+The UFO geometry library
 
 ✔: means implemented<br>
 ✖: not implemented<br>
