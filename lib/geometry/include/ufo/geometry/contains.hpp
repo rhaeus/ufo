@@ -239,20 +239,30 @@ template <std::size_t Dim, class T>
 template <class T>
 [[nodiscard]] constexpr bool contains(Capsule<3, T> const& a, Frustum<T> const& b)
 {
-	return contains(a, AABB<3, T>(min(b), max(b)));
+	for (auto c : corners(b)) {
+		if (!contains(a, c)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool contains(Capsule<Dim, T> const&     a,
                                       LineSegment<Dim, T> const& b)
 {
-	// TODO: Implement
+	return contains(a, b.start) && contains(a, b.end);
 }
 
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool contains(Capsule<Dim, T> const& a, OBB<Dim, T> const& b)
 {
-	return contains(a, AABB<Dim, T>(min(b), max(b)));
+	for (auto c : corners(b)) {
+		if (!contains(a, c)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 template <class T>
@@ -288,7 +298,12 @@ template <std::size_t Dim, class T>
 template <class T>
 [[nodiscard]] constexpr bool contains(Frustum<T> const& a, AABB<3, T> const& b)
 {
-	// TODO: Implement
+	for (auto c : corners(b)) {
+		if (!contains(a, c)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 template <class T>
@@ -306,7 +321,12 @@ template <class T>
 template <class T>
 [[nodiscard]] constexpr bool contains(Frustum<T> const& a, Frustum<T> const& b)
 {
-	// TODO: Implement
+	for (auto c : corners(b)) {
+		if (!contains(a, c)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 template <class T>
@@ -318,7 +338,12 @@ template <class T>
 template <class T>
 [[nodiscard]] constexpr bool contains(Frustum<T> const& a, OBB<3, T> const& b)
 {
-	// TODO: Implement
+	for (auto c : corners(b)) {
+		if (!contains(a, c)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 template <class T>
@@ -336,7 +361,7 @@ template <class T>
 template <class T>
 [[nodiscard]] constexpr bool contains(Frustum<T> const& a, Triangle<3, T> const& b)
 {
-	// TODO: Implement
+	return contains(a, b[0]) && contains(a, b[1]) && contains(a, b[2]);
 }
 
 template <class T>
@@ -423,7 +448,12 @@ template <std::size_t Dim, class T>
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool contains(OBB<Dim, T> const& a, AABB<Dim, T> const& b)
 {
-	// TODO: Implement
+	for (auto c : corners(b)) {
+		if (!contains(a, c)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 template <std::size_t Dim, class T>
@@ -441,19 +471,29 @@ template <std::size_t Dim, class T>
 template <class T>
 [[nodiscard]] constexpr bool contains(OBB<3, T> const& a, Frustum<T> const& b)
 {
-	// TODO: Implement
+	for (auto c : corners(b)) {
+		if (!contains(a, c)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool contains(OBB<Dim, T> const& a, LineSegment<Dim, T> const& b)
 {
-	// TODO: Implement
+	return contains(a, b.start) && contains(a, b.end);
 }
 
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool contains(OBB<Dim, T> const& a, OBB<Dim, T> const& b)
 {
-	// TODO: Implement
+	for (auto c : corners(b)) {
+		if (!contains(a, c)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 template <class T>
@@ -471,7 +511,7 @@ template <std::size_t Dim, class T>
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool contains(OBB<Dim, T> const& a, Triangle<Dim, T> const& b)
 {
-	// TODO: Implement
+	return contains(a, b[0]) && contains(a, b[1]) && contains(a, b[2]);
 }
 
 template <std::size_t Dim, class T>
@@ -591,7 +631,7 @@ template <std::size_t Dim, class T>
 template <class T>
 [[nodiscard]] constexpr bool contains(Ray<3, T> const& a, Plane<T> const& b)
 {
-	// TODO: Implement
+	return false;
 }
 
 template <std::size_t Dim, class T>

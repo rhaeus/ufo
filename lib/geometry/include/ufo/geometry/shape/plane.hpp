@@ -55,6 +55,8 @@ struct Plane {
 	constexpr Plane() noexcept             = default;
 	constexpr Plane(Plane const&) noexcept = default;
 
+	constexpr explicit Plane(Vec<3, T> normal) noexcept : normal(normal) {}
+
 	constexpr Plane(Vec<3, T> normal, T distance) noexcept
 	    : normal(normal), distance(distance)
 	{
@@ -84,7 +86,8 @@ struct Plane {
 template <class T>
 bool operator==(Plane<T> const& lhs, Plane<T> const& rhs)
 {
-	return lhs.normal == rhs.normal && lhs.distance == rhs.distance;
+	return (lhs.normal == rhs.normal && lhs.distance == rhs.distance) ||
+	       (lhs.normal == -rhs.normal && lhs.distance == -rhs.distance);
 }
 
 /*!
