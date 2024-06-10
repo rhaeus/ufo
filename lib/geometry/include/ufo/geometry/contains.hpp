@@ -567,7 +567,7 @@ template <std::size_t Dim, class T>
 template <class T>
 [[nodiscard]] constexpr bool contains(Vec<3, T> const& a, Frustum<T> const& b)
 {
-	// TODO: Implement
+	return a == min(b) && a == max(b);
 }
 
 template <std::size_t Dim, class T>
@@ -597,7 +597,7 @@ template <std::size_t Dim, class T>
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool contains(Vec<Dim, T> const& a, Triangle<Dim, T> const& b)
 {
-	// TODO: Implement
+	return a == b[0] && a == b[1] && a == b[2];
 }
 
 template <std::size_t Dim, class T>
