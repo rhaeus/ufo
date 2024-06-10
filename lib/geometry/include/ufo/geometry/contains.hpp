@@ -146,13 +146,14 @@ template <std::size_t Dim, class T>
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, Capsule<Dim, T> const& b)
 {
-	// TODO: Implement
+	return distance(a.center, b.start) + b.radius <= a.radius &&
+	       distance(a.center, b.end) + b.radius <= a.radius;
 }
 
 template <class T>
 [[nodiscard]] constexpr bool contains(BS<3, T> const& a, Frustum<T> const& b)
 {
-	// TODO: Implement
+	return contains(a, min(b)) && contains(a, max(b));
 }
 
 template <std::size_t Dim, class T>
@@ -182,7 +183,7 @@ template <std::size_t Dim, class T>
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, Triangle<Dim, T> const& b)
 {
-	// TODO: Implement
+	return contains(a, b[0]) && contains(a, b[1]) && contains(a, b[2]);
 }
 
 template <std::size_t Dim, class T>
