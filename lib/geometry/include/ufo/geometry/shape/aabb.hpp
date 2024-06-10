@@ -39,44 +39,91 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef UFO_GEOMETRY_LINE_SEGMENT_HPP
-#define UFO_GEOMETRY_LINE_SEGMENT_HPP
+#ifndef UFO_GEOMETRY_SHAPE_AXIS_ALIGNED_BOUNDING_BOX_HPP
+#define UFO_GEOMETRY_SHAPE_AXIS_ALIGNED_BOUNDING_BOX_HPP
 
 // UFO
-#include <ufo/geometry/point.hpp>
+#include <ufo/math/vec.hpp>
+
+// STL
+#include <cstddef>
 
 namespace ufo
 {
-struct LineSegment {
-	Point start;
-	Point end;
+/*!
+ * @brief Something something
+ * @author Daniel Duberg
+ *
+ */
+template <std::size_t Dim = 3, class T = float>
+struct AABB {
+	using value_type = T;
 
-	constexpr LineSegment() noexcept = default;
+	Vec<Dim, T> min;
+	Vec<Dim, T> max;
 
-	constexpr LineSegment(Point start, Point end) noexcept : start(start), end(end) {}
+	constexpr AABB() noexcept            = default;
+	constexpr AABB(AABB const&) noexcept = default;
 
-	constexpr bool operator==(LineSegment const& rhs) const noexcept
+	constexpr AABB(Vec<Dim, T> min, Vec<Dim, T> max) noexcept : min(min), max(max) {}
+
+	constexpr AABB(Vec<Dim, T> center, T half_size) noexcept
+	    : min(center - half_size), max(center + half_size)
 	{
-		return rhs.start == start && rhs.end == end;
 	}
 
-	constexpr bool operator!=(LineSegment const& rhs) const noexcept
+	template <class U>
+	constexpr explicit AABB(AABB<Dim, U> const& other) noexcept
+	    : min(other.min), max(other.max)
 	{
-		return !(*this == rhs);
 	}
 
-	constexpr Point min() const noexcept
+	[[nodiscard]] constexpr Vec<Dim, T> center() const noexcept
 	{
-		return Point(std::min(start.x, end.x), std::min(start.y, end.y),
-		             std::min(start.z, end.z));
+		return min + (max - min) * static_cast<T>(0.5);
 	}
 
-	constexpr Point max() const noexcept
+	[[nodiscard]] constexpr Vec<Dim, T> length() const noexcept { return max - min; }
+
+	[[nodiscard]] constexpr Vec<Dim, T> halfLength() const noexcept
 	{
-		return Point(std::max(start.x, end.x), std::max(start.y, end.y),
-		             std::max(start.z, end.z));
+		return (max - min) * static_cast<T>(0.5);
 	}
 };
+
+using AABB1 = AABB<1, float>;
+using AABB2 = AABB<2, float>;
+using AABB3 = AABB<3, float>;
+using AABB4 = AABB<4, float>;
+
+using AABB1d = AABB<1, double>;
+using AABB2d = AABB<2, double>;
+using AABB3d = AABB<3, double>;
+using AABB4d = AABB<4, double>;
+
+/*!
+ * @brief Compare two AABBs.
+ *
+ * @param lhs,rhs The AABBs to compare
+ * @return `true` if they compare equal, `false` otherwise.
+ */
+template <std::size_t Dim, class T>
+bool operator==(AABB<Dim, T> const& lhs, AABB<Dim, T> const& rhs)
+{
+	return lhs.min == rhs.min && lhs.min == rhs.min;
+}
+
+/*!
+ * @brief Compare two AABBs.
+ *
+ * @param lhs,rhs The AABBs to compare
+ * @return `true` if they do not compare equal, `false` otherwise.
+ */
+template <std::size_t Dim, class T>
+bool operator!=(AABB<Dim, T> const& lhs, AABB<Dim, T> const& rhs)
+{
+	return !(lhs == rhs);
+}
 }  // namespace ufo
 
-#endif  // UFO_GEOMETRY_LINE_SEGMENT_HPP
+#endif  // UFO_GEOMETRY_SHAPE_AXIS_ALIGNED_BOUNDING_BOX_HPP

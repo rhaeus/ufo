@@ -39,20 +39,80 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef UFO_GEOMETRY_POINT_HPP
-#define UFO_GEOMETRY_POINT_HPP
+#ifndef UFO_GEOMETRY_SHAPE_TRIANGLE_HPP
+#define UFO_GEOMETRY_SHAPE_TRIANGLE_HPP
 
 // UFO
-#include <ufo/math/vec2.hpp>
-#include <ufo/math/vec3.hpp>
-#include <ufo/math/vec4.hpp>
+#include <ufo/math/vec.hpp>
+
+// STL
+#include <array>
+#include <cstddef>
 
 namespace ufo
 {
-using Point2 = Vec2f;
-using Point3 = Vec3f;
-using Point4 = Vec4f;
-using Point  = Point3;
+template <std::size_t Dim = 3, class T = float>
+struct Triangle {
+	using value_type = T;
+
+	std::array<Vec<Dim, T>, 3> points;
+
+	constexpr Triangle() noexcept                = default;
+	constexpr Triangle(Triangle const&) noexcept = default;
+
+	constexpr Triangle(Vec<Dim, T> point_1, Vec<Dim, T> point_2,
+	                   Vec<Dim, T> point_3) noexcept
+	    : points{point_1, point_2, point_3}
+	{
+	}
+	template <class U>
+	constexpr Triangle(Triangle<Dim, U> const& other) noexcept
+	    : points{Vec<Dim, T>(other[0]), Vec<Dim, T>(other[1]), Vec<Dim, T>(other[2])}
+	{
+	}
+
+	[[nodiscard]] constexpr Vec<Dim, T>& operator[](std::size_t pos) noexcept
+	{
+		return points[pos];
+	}
+
+	[[nodiscard]] constexpr Vec<Dim, T> const& operator[](std::size_t pos) const noexcept
+	{
+		return points[pos];
+	}
+};
+
+using Triangle2 = Triangle<2, float>;
+using Triangle3 = Triangle<3, float>;
+using Triangle4 = Triangle<4, float>;
+
+using Triangle2d = Triangle<2, double>;
+using Triangle3d = Triangle<3, double>;
+using Triangle4d = Triangle<4, double>;
+
+/*!
+ * @brief Compare two Triangles.
+ *
+ * @param lhs,rhs The Triangles to compare
+ * @return `true` if they compare equal, `false` otherwise.
+ */
+template <std::size_t Dim, class T>
+bool operator==(Triangle<Dim, T> const& lhs, Triangle<Dim, T> const& rhs)
+{
+	return lhs.points == rhs.points;
+}
+
+/*!
+ * @brief Compare two Triangles.
+ *
+ * @param lhs,rhs The Triangles to compare
+ * @return `true` if they do not compare equal, `false` otherwise.
+ */
+template <std::size_t Dim, class T>
+bool operator!=(Triangle<Dim, T> const& lhs, Triangle<Dim, T> const& rhs)
+{
+	return !(lhs == rhs);
+}
 }  // namespace ufo
 
-#endif  // UFO_GEOMETRY_POINT_HPP
+#endif  // UFO_GEOMETRY_SHAPE_TRIANGLE_HPP

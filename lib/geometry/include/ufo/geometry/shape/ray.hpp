@@ -39,42 +39,72 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef UFO_GEOMETRY_AXIS_ALIGNED_BOUNDING_TESSERACT_HPP
-#define UFO_GEOMETRY_AXIS_ALIGNED_BOUNDING_TESSERACT_HPP
+#ifndef UFO_GEOMETRY_SHAPE_RAY_HPP
+#define UFO_GEOMETRY_SHAPE_RAY_HPP
 
 // UFO
-#include <ufo/geometry/point.hpp>
+#include <ufo/math/vec.hpp>
+
+// STL
+#include <cstddef>
 
 namespace ufo
 {
-struct AABT {
-	Point4 center;
-	float  half_size{};
+template <std::size_t Dim = 3, class T = float>
+struct Ray {
+	using value_type = T;
 
-	constexpr AABT() noexcept = default;
+	Vec<Dim, T> origin;
+	Vec<Dim, T> direction;
 
-	constexpr AABT(Point4 center, float half_size) noexcept
-	    : center(center), half_size(half_size)
+	constexpr Ray() noexcept           = default;
+	constexpr Ray(Ray const&) noexcept = default;
+
+	constexpr Ray(Vec<Dim, T> origin, Vec<Dim, T> direction) noexcept
+	    : origin(origin), direction(normalize(direction))
 	{
 	}
 
-	constexpr AABT(float center_x, float center_y, float center_z, float center_w,
-	               float half_size) noexcept
-	    : center(center_x, center_y, center_z, center_w), half_size(half_size)
+	template <class U>
+	constexpr explicit Ray(Ray<Dim, U> const& other) noexcept
+	    : origin(other.origin), direction(other.direction)
 	{
 	}
-
-	constexpr bool operator==(AABT rhs) const noexcept
-	{
-		return rhs.center == center && rhs.half_size == half_size;
-	}
-
-	constexpr bool operator!=(AABT rhs) const noexcept { return !(*this == rhs); }
-
-	constexpr Point4 min() const noexcept { return center - half_size; }
-
-	constexpr Point4 max() const noexcept { return center + half_size; }
 };
+
+using Ray1 = Ray<1, float>;
+using Ray2 = Ray<2, float>;
+using Ray3 = Ray<3, float>;
+using Ray4 = Ray<4, float>;
+
+using Ray1d = Ray<1, double>;
+using Ray2d = Ray<2, double>;
+using Ray3d = Ray<3, double>;
+using Ray4d = Ray<4, double>;
+
+/*!
+ * @brief Compare two Rays.
+ *
+ * @param lhs,rhs The Rays to compare
+ * @return `true` if they compare equal, `false` otherwise.
+ */
+template <std::size_t Dim, class T>
+bool operator==(Ray<Dim, T> const& lhs, Ray<Dim, T> const& rhs)
+{
+	return lhs.origin == rhs.origin && lhs.direction == rhs.direction;
+}
+
+/*!
+ * @brief Compare two Rays.
+ *
+ * @param lhs,rhs The Rays to compare
+ * @return `true` if they do not compare equal, `false` otherwise.
+ */
+template <std::size_t Dim, class T>
+bool operator!=(Ray<Dim, T> const& lhs, Ray<Dim, T> const& rhs)
+{
+	return !(lhs == rhs);
+}
 }  // namespace ufo
 
-#endif  // UFO_GEOMETRY_AXIS_ALIGNED_BOUNDING_TESSERACT_HPP
+#endif  // UFO_GEOMETRY_SHAPE_RAY_HPP

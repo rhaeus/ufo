@@ -39,80 +39,65 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef UFO_GEOMETRY_RAY_HPP
-#define UFO_GEOMETRY_RAY_HPP
+#ifndef UFO_GEOMETRY_SHAPE_PLANE_HPP
+#define UFO_GEOMETRY_SHAPE_PLANE_HPP
 
 // UFO
-#include <ufo/geometry/point.hpp>
-
-// STL
-#include <limits>
+#include <ufo/math/vec.hpp>
 
 namespace ufo
 {
-struct Ray2D {
-	Point2 origin;
-	Point2 direction;
+template <class T = float>
+struct Plane {
+	Vec<3, T> normal;
+	T         distance{};
 
-	constexpr Ray2D() noexcept = default;
+	constexpr Plane() noexcept             = default;
+	constexpr Plane(Plane const&) noexcept = default;
 
-	constexpr Ray2D(Point2 origin, Point2 direction) noexcept
-	    : origin(origin), direction(direction.normalized())
+	constexpr Plane(Vec<3, T> normal, T distance) noexcept
+	    : normal(normal), distance(distance)
 	{
 	}
 
-	constexpr bool operator==(Ray2D const& rhs) const noexcept
+	constexpr Plane(Vec<3, T> v_1, Vec<3, T> v_2, Vec<3, T> v_3) noexcept
 	{
-		return rhs.origin == origin && rhs.direction == direction;
+		auto aux_1 = v_1 - v_2;
+		auto aux_2 = v_3 - v_2;
+		normal     = normalize(cross(aux_2, aux_1));
+		distance   = -dot(normal, v_2);
 	}
 
-	constexpr bool operator!=(Ray2D const& rhs) const noexcept { return !(*this == rhs); }
-
-	constexpr Point2 min() const noexcept
+	template <class U>
+	constexpr explicit Plane(Plane<U> const& other) noexcept
+	    : normal(other.normal), distance(static_cast<T>(other.distance))
 	{
-		return {0 <= direction.x ? origin.x : -std::numeric_limits<float>::infinity(),
-		        0 <= direction.y ? origin.y : -std::numeric_limits<float>::infinity()};
-	}
-
-	constexpr Point2 max() const noexcept
-	{
-		return {0 >= direction.x ? origin.x : std::numeric_limits<float>::infinity(),
-		        0 >= direction.y ? origin.y : std::numeric_limits<float>::infinity()};
 	}
 };
 
-struct Ray {
-	Point origin;
-	Point direction;
+/*!
+ * @brief Compare two Planes.
+ *
+ * @param lhs,rhs The Planes to compare
+ * @return `true` if they compare equal, `false` otherwise.
+ */
+template <class T>
+bool operator==(Plane<T> const& lhs, Plane<T> const& rhs)
+{
+	return lhs.normal == rhs.normal && lhs.distance == rhs.distance;
+}
 
-	constexpr Ray() noexcept = default;
-
-	constexpr Ray(Point origin, Point direction) noexcept
-	    : origin(origin), direction(direction.normalized())
-	{
-	}
-
-	constexpr bool operator==(Ray const& rhs) const noexcept
-	{
-		return rhs.origin == origin && rhs.direction == direction;
-	}
-
-	constexpr bool operator!=(Ray const& rhs) const noexcept { return !(*this == rhs); }
-
-	constexpr Point min() const noexcept
-	{
-		return {0 <= direction.x ? origin.x : -std::numeric_limits<float>::infinity(),
-		        0 <= direction.y ? origin.y : -std::numeric_limits<float>::infinity(),
-		        0 <= direction.z ? origin.z : -std::numeric_limits<float>::infinity()};
-	}
-
-	constexpr Point max() const noexcept
-	{
-		return {0 >= direction.x ? origin.x : std::numeric_limits<float>::infinity(),
-		        0 >= direction.y ? origin.y : std::numeric_limits<float>::infinity(),
-		        0 >= direction.z ? origin.z : std::numeric_limits<float>::infinity()};
-	}
-};
+/*!
+ * @brief Compare two Planes.
+ *
+ * @param lhs,rhs The Planes to compare
+ * @return `true` if they do not compare equal, `false` otherwise.
+ */
+template <class T>
+bool operator!=(Plane<T> const& lhs, Plane<T> const& rhs)
+{
+	return !(lhs == rhs);
+}
 }  // namespace ufo
 
-#endif  // UFO_GEOMETRY_RAY_HPP
+#endif  // UFO_GEOMETRY_SHAPE_PLANE_HPP

@@ -39,41 +39,74 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef UFO_GEOMETRY_AXIS_ALIGNED_BOUNDING_CUBE_HPP
-#define UFO_GEOMETRY_AXIS_ALIGNED_BOUNDING_CUBE_HPP
+#ifndef UFO_GEOMETRY_SHAPE_BOUNDING_SPHERE_HPP
+#define UFO_GEOMETRY_SHAPE_BOUNDING_SPHERE_HPP
 
 // UFO
-#include <ufo/geometry/point.hpp>
+#include <ufo/math/vec.hpp>
+
+// STL
+#include <cstddef>
 
 namespace ufo
 {
-struct AABC {
-	Point3 center;
-	float  half_size{};
+/*!
+ * @brief Something something
+ * @author Daniel Duberg
+ *
+ */
+template <std::size_t Dim = 3, class T = float>
+struct BS {
+	using value_type = T;
 
-	constexpr AABC() noexcept = default;
+	Vec<Dim, T> center;
+	T           radius;
 
-	constexpr AABC(Point3 center, float half_size) noexcept
-	    : center(center), half_size(half_size)
+	constexpr BS() noexcept          = default;
+	constexpr BS(BS const&) noexcept = default;
+
+	constexpr BS(Vec<Dim, T> center, T radius) noexcept : center(center), radius(radius) {}
+
+	template <class U>
+	constexpr explicit BS(BS<Dim, U> const& other) noexcept
+	    : center(other.center), radius(other.radius)
 	{
 	}
-
-	constexpr AABC(float center_x, float center_y, float center_z, float half_size) noexcept
-	    : center(center_x, center_y, center_z), half_size(half_size)
-	{
-	}
-
-	constexpr bool operator==(AABC rhs) const noexcept
-	{
-		return rhs.center == center && rhs.half_size == half_size;
-	}
-
-	constexpr bool operator!=(AABC rhs) const noexcept { return !(*this == rhs); }
-
-	constexpr Point3 min() const noexcept { return center - half_size; }
-
-	constexpr Point3 max() const noexcept { return center + half_size; }
 };
+
+using BS1 = BS<1, float>;
+using BS2 = BS<2, float>;
+using BS3 = BS<3, float>;
+using BS4 = BS<4, float>;
+
+using BS1d = BS<1, double>;
+using BS2d = BS<2, double>;
+using BS3d = BS<3, double>;
+using BS4d = BS<4, double>;
+
+/*!
+ * @brief Compare two BSs.
+ *
+ * @param lhs,rhs The BSs to compare
+ * @return `true` if they compare equal, `false` otherwise.
+ */
+template <std::size_t Dim, class T>
+bool operator==(BS<Dim, T> const& lhs, BS<Dim, T> const& rhs)
+{
+	return lhs.center == rhs.center && lhs.radius == rhs.radius;
+}
+
+/*!
+ * @brief Compare two BSs.
+ *
+ * @param lhs,rhs The BSs to compare
+ * @return `true` if they do not compare equal, `false` otherwise.
+ */
+template <std::size_t Dim, class T>
+bool operator!=(BS<Dim, T> const& lhs, BS<Dim, T> const& rhs)
+{
+	return !(lhs == rhs);
+}
 }  // namespace ufo
 
-#endif  // UFO_GEOMETRY_AXIS_ALIGNED_BOUNDING_CUBE_HPP
+#endif  // UFO_GEOMETRY_SHAPE_BOUNDING_SPHERE_HPP

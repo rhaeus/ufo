@@ -46,6 +46,6 @@
 #include <ufo/geometry/bounding_volume.hpp>
 #include <ufo/geometry/contains.hpp>
 #include <ufo/geometry/intersects.hpp>
-#include <ufo/geometry/minimum_distance.hpp>
+#include <ufo/geometry/distance.hpp>
 
 #endif  // UFO_GEOMETRY_HPP

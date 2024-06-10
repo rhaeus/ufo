@@ -43,626 +43,568 @@
 #define UFO_GEOMETRY_CONTAINS_HPP
 
 // UFO
-#include <ufo/geometry/bounding_volume.hpp>
-#include <ufo/geometry/minimum_distance.hpp>
+#include <ufo/geometry/shape/aabb.hpp>
+#include <ufo/geometry/shape/bs.hpp>
+#include <ufo/geometry/shape/frustum.hpp>
+#include <ufo/geometry/shape/line_segment.hpp>
+#include <ufo/geometry/shape/obb.hpp>
+#include <ufo/geometry/shape/plane.hpp>
+#include <ufo/geometry/shape/ray.hpp>
+#include <ufo/geometry/shape/triangle.hpp>
+#include <ufo/math/vec.hpp>
+
+// STL
+#include <cmath>
 
 namespace ufo
 {
-//
-// AABB
-//
+/**************************************************************************************
+|                                                                                     |
+|                                        AABB                                         |
+|                                                                                     |
+**************************************************************************************/
 
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(AABB const& a, AABB const& b) noexcept
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(AABB<Dim, T> const& a, AABB<Dim, T> const& b)
 {
-	Point a_min = a.min();
-	Point a_max = a.max();
-	Point b_min = b.min();
-	Point b_max = b.max();
-	return a_min.x <= b_max.x && a_min.y <= b_max.y && a_min.z <= b_max.z &&
-	       a_max.x >= b_min.x && a_max.y >= b_min.y && a_max.z >= b_min.z;
+	return all(min(a) <= min(b) && max(b) <= max(a));
 }
 
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(AABB const& a, AABC b) noexcept
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(AABB<Dim, T> const& a, BS<Dim, T> const& b)
 {
-	Point a_min = a.min();
-	Point a_max = a.max();
-	Point b_min = b.min();
-	Point b_max = b.max();
-	return a_min.x <= b_max.x && a_min.y <= b_max.y && a_min.z <= b_max.z &&
-	       a_max.x >= b_min.x && a_max.y >= b_min.y && a_max.z >= b_min.z;
+	// TODO: Implement
 }
 
-// constexpr bool contains(AABB const& a, Frustum const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(AABB const& a, LineSegment const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(AABB const& a, OBB const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(AABB const& a, Plane const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(AABB const& a, Point b) noexcept
+template <class T>
+[[nodiscard]] constexpr bool contains(AABB<3, T> const& a, Frustum<T> const& b)
 {
-	Point min = a.min();
-	Point max = a.max();
-	return min.x <= b.x && min.y <= b.y && min.z <= b.z && max.x >= b.x && max.y >= b.y &&
-	       max.z >= b.z;
+	// TODO: Implement
 }
 
-// constexpr bool contains(AABB const& a, Ray const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(AABB const& a, Sphere const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-//
-// AABC
-//
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(AABC a, AABB const& b) noexcept
-{
-	Point a_min = a.min();
-	Point a_max = a.max();
-	Point b_min = b.min();
-	Point b_max = b.max();
-	return a_min.x <= b_max.x && a_min.y <= b_max.y && a_min.z <= b_max.z &&
-	       a_max.x >= b_min.x && a_max.y >= b_min.y && a_max.z >= b_min.z;
-}
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(AABC a, AABC b) noexcept
-{
-	Point a_min = a.min();
-	Point a_max = a.max();
-	Point b_min = b.min();
-	Point b_max = b.max();
-	return a_min.x <= b_max.x && a_min.y <= b_max.y && a_min.z <= b_max.z &&
-	       a_max.x >= b_min.x && a_max.y >= b_min.y && a_max.z >= b_min.z;
-}
-
-// constexpr bool contains(AABC a, Frustum const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(AABC a, LineSegment const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(AABC a, OBB const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(AABC a, Plane const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(AABC a, Point b) noexcept
-{
-	Point min = a.min();
-	Point max = a.max();
-	return min.x <= b.x && min.y <= b.y && min.z <= b.z && max.x >= b.x && max.y >= b.y &&
-	       max.z >= b.z;
-}
-
-// constexpr bool contains(AABC a, Ray const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(AABC a, Sphere const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-//
-// Frustum
-//
-
-// constexpr bool contains(Frustum const& a, AABB const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Frustum const& a, AABC b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Frustum const& a, Frustum const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Frustum const& a, LineSegment const& b)
-// noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Frustum const& a, OBB const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Frustum const& a, Plane const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Frustum const& a, Point b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Frustum const& a, Ray const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Frustum const& a, Sphere const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-//
-// Line segment
-//
-
-// constexpr bool contains(LineSegment const& a, AABB const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(LineSegment const& a, AABC b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(LineSegment const& a, Frustum const& b)
-// noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(LineSegment const& a,
-//                         LineSegment const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(LineSegment const& a, OBB const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(LineSegment const& a, Plane const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(LineSegment const& a, Point b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(LineSegment const& a, Ray const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(LineSegment const& a, Sphere const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-//
-// OBB
-//
-
-// constexpr bool contains(OBB const& a, AABB const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(OBB const& a, AABC b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(OBB const& a, Frustum const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(OBB const& a, LineSegment const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(OBB const& a, OBB const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(OBB const& a, Plane const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(OBB const& a, Point b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(OBB const& a, Ray const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(OBB const& a, Sphere const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-//
-// Plane
-//
-
-// constexpr bool contains(Plane const& a, AABB const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Plane const& a, AABC b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Plane const& a, Frustum const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Plane const& a, LineSegment const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Plane const& a, OBB const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Plane const& a, Plane const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Plane const& a, Point b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Plane const& a, Ray const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Plane const& a, Sphere const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-//
-// Point
-//
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(Point a, AABB const& b) noexcept
-{
-	return a == b.center && 0 == b.half_size.x && 0 == b.half_size.y && 0 == b.half_size.z;
-}
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(Point a, AABC b) noexcept
-{
-	return a == b.center && 0 == b.half_size;
-}
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(Point a, Frustum const& b) noexcept
-{
-	return false;  // FIXME: Check
-}
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(Point a, LineSegment const& b) noexcept
-{
-	return a == b.start && a == b.end;
-}
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(Point a, OBB const& b) noexcept
-{
-	return a == b.center && 0 == b.half_size.x && 0 == b.half_size.y && 0 == b.half_size.z;
-}
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(Point a, Plane const& b) noexcept
-{
-	return false;  // FIXME: Check
-}
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(Point a, Point b) noexcept { return a == b; }
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(Point a, Ray const& b) noexcept { return false; }
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(Point a, Sphere const& b) noexcept
-{
-	return 0 == b.radius && a == b.center;
-}
-
-//
-// Ray
-//
-
-// constexpr bool contains(Ray const& a, AABB const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Ray const& a, AABC b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Ray const& a, Frustum const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Ray const& a, LineSegment const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Ray const& a, OBB const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Ray const& a, Plane const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Ray const& a, Point b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Ray const& a, Ray const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-// constexpr bool contains(Ray const& a, Sphere const& b) noexcept
-// {
-// 	// TODO: Implement
-// }
-
-//
-// Sphere
-//
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(Sphere const& a, Point b) noexcept
-{
-	return distance(a, b) <= a.radius;
-}
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(Sphere const& a, AABB const& b) noexcept
-{
-	return contains(a, b.min()) && contains(a, b.max());
-}
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(Sphere const& a, AABC b) noexcept
-{
-	return contains(a, b.min()) && contains(a, b.max());
-}
-
-// constexpr bool contains(Sphere const& a, Frustum const& b)
-// {
-// 	// TODO: Implement
-// }
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(Sphere const& a, LineSegment const& b) noexcept
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(AABB<Dim, T> const& a, LineSegment<Dim, T> const& b)
 {
 	return contains(a, b.start) && contains(a, b.end);
 }
 
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(Sphere const& a, OBB const& b) noexcept
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(AABB<Dim, T> const& a, OBB<Dim, T> const& b)
 {
-	return contains(a, b.min()) && contains(a, b.max());
+	return contains(a, min(b)) && contains(a, max(b));
 }
 
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(Sphere const& a, Plane const& b) noexcept { return false; }
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(Sphere const& a, Ray const& b) noexcept { return false; }
-
-/*!
- * @brief Check if a contains b, that is b is within a.
- *
- * @param a,b The two geometry object to check.
- * @return Whether a contains b.
- */
-constexpr bool contains(Sphere const& a, Sphere const& b) noexcept
+template <class T>
+[[nodiscard]] constexpr bool contains(AABB<3, T> const& a, Plane<T> const& b)
 {
-	return a.radius >= b.radius + a.center.distance(b.center);
+	// TODO: Implement
 }
 
-//
-// Bounding volume
-//
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(AABB<Dim, T> const& a, Ray<Dim, T> const& b)
+{
+	return false;
+}
 
-// template <class Geometry>
-// bool contains(BoundingVolume const& a, Geometry const& b) noexcept
-// {
-// 	throw std::logic_error("Function not yet implemented.");
-// 	// TODO: Implement
-// }
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(AABB<Dim, T> const& a, Triangle<Dim, T> const& b)
+{
+	// TODO: Implement
+}
 
-// template <class Geometry>
-// bool contains(Geometry const& a, BoundingVolume const& b) noexcept
-// {
-// 	throw std::logic_error("Function not yet implemented.");
-// 	// TODO: Implement
-// }
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(AABB<Dim, T> const& a, Vec<Dim, T> const& b)
+{
+	return all(min(a) <= b && b <= max(a));
+}
 
-// bool contains(BoundingVolume const& a, BoundingVolume const& b);
+/**************************************************************************************
+|                                                                                     |
+|                                         BS                                          |
+|                                                                                     |
+**************************************************************************************/
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, AABB<Dim, T> const& b)
+{
+	return contains(a, min(b)) && contains(a, max(b));
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, BS<Dim, T> const& b)
+{
+	return a.radius >= distance(a.center, b.center) + b.radius;
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(BS<3, T> const& a, Frustum<T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, LineSegment<Dim, T> const& b)
+{
+	return contains(a, b.start) && contains(a, b.end);
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, OBB<Dim, T> const& b)
+{
+	return contains(a, min(b)()) && contains(a, max(b)());
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(BS<3, T> const& a, Plane<T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, Ray<Dim, T> const& b)
+{
+	return false;
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, Triangle<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, Vec<Dim, T> const& b)
+{
+	return distanceSquared(a, b) <= a.radius * a.radius;
+}
+
+/**************************************************************************************
+|                                                                                     |
+|                                       Frustum                                       |
+|                                                                                     |
+**************************************************************************************/
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Frustum<T> const& a, AABB<3, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Frustum<T> const& a, BS<3, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Frustum<T> const& a, Frustum<T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Frustum<T> const& a, LineSegment<3, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Frustum<T> const& a, OBB<3, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Frustum<T> const& a, Plane<T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Frustum<T> const& a, Ray<3, T> const& b)
+{
+	return false;
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Frustum<T> const& a, Triangle<3, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Frustum<T> const& a, Vec<3, T> const& b)
+{
+	// TODO: Implement
+}
+
+/**************************************************************************************
+|                                                                                     |
+|                                    Line segment                                     |
+|                                                                                     |
+**************************************************************************************/
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(LineSegment<Dim, T> const& a, AABB<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(LineSegment<Dim, T> const& a, BS<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(LineSegment<3, T> const& a, Frustum<T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(LineSegment<Dim, T> const& a,
+                                      LineSegment<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(LineSegment<Dim, T> const& a, OBB<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(LineSegment<3, T> const& a, Plane<T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(LineSegment<Dim, T> const& a, Ray<Dim, T> const& b)
+{
+	return false;
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(LineSegment<Dim, T> const& a,
+                                      Triangle<Dim, T> const&    b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(LineSegment<Dim, T> const& a, Vec<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+/**************************************************************************************
+|                                                                                     |
+|                                         OBB                                         |
+|                                                                                     |
+**************************************************************************************/
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(OBB<Dim, T> const& a, AABB<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(OBB<Dim, T> const& a, BS<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(OBB<3, T> const& a, Frustum<T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(OBB<Dim, T> const& a, LineSegment<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(OBB<Dim, T> const& a, OBB<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(OBB<3, T> const& a, Plane<T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(OBB<Dim, T> const& a, Ray<Dim, T> const& b)
+{
+	return false;
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(OBB<Dim, T> const& a, Triangle<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(OBB<Dim, T> const& a, Vec<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+/**************************************************************************************
+|                                                                                     |
+|                                        Plane                                        |
+|                                                                                     |
+**************************************************************************************/
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Plane<T> const& a, AABB<3, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Plane<T> const& a, BS<3, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Plane<T> const& a, Frustum<T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Plane<T> const& a, LineSegment<3, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Plane<T> const& a, OBB<3, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Plane<T> const& a, Plane<T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Plane<T> const& a, Ray<3, T> const& b)
+{
+	return false;
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Plane<T> const& a, Triangle<3, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Plane<T> const& a, Vec<3, T> const& b)
+{
+	// TODO: Implement
+}
+
+/**************************************************************************************
+|                                                                                     |
+|                                         Ray                                         |
+|                                                                                     |
+**************************************************************************************/
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Ray<Dim, T> const& a, AABB<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Ray<Dim, T> const& a, BS<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Ray<3, T> const& a, Frustum<T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Ray<Dim, T> const& a, LineSegment<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Ray<Dim, T> const& a, OBB<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Ray<3, T> const& a, Plane<T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Ray<Dim, T> const& a, Ray<Dim, T> const& b)
+{
+	return a == b;
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Ray<Dim, T> const& a, Triangle<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Ray<Dim, T> const& a, Vec<Dim, T> const& b)
+{
+	if (a.origin == b) {
+		return true;
+	}
+	auto direction = normalize(b - a.origin);
+	return T(1) == dot(direction, a.direction);
+}
+
+/**************************************************************************************
+|                                                                                     |
+|                                      Triangle                                       |
+|                                                                                     |
+**************************************************************************************/
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Triangle<Dim, T> const& a, AABB<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Triangle<Dim, T> const& a, BS<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Triangle<3, T> const& a, Frustum<T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Triangle<Dim, T> const&    a,
+                                      LineSegment<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Triangle<Dim, T> const& a, OBB<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Triangle<3, T> const& a, Plane<T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Triangle<Dim, T> const& a, Ray<Dim, T> const& b)
+{
+	return false;
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Triangle<Dim, T> const& a,
+                                      Triangle<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Triangle<Dim, T> const& a, Vec<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+/**************************************************************************************
+|                                                                                     |
+|                                         Vec                                         |
+|                                                                                     |
+**************************************************************************************/
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Vec<Dim, T> const& a, AABB<Dim, T> const& b)
+{
+	return a == min(b) && a == max(b);
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Vec<Dim, T> const& a, BS<Dim, T> const& b)
+{
+	return T(0) == b.radius && a == b.center;
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Vec<3, T> const& a, Frustum<T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Vec<Dim, T> const& a, LineSegment<Dim, T> const& b)
+{
+	return a == b.start && a == b.end;
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Vec<Dim, T> const& a, OBB<Dim, T> const& b)
+{
+	return a == b.center && Vec<Dim, T>(0) == b.half_length;
+}
+
+template <class T>
+[[nodiscard]] constexpr bool contains(Vec<3, T> const& a, Plane<T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Vec<Dim, T> const& a, Ray<Dim, T> const& b)
+{
+	return false;
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Vec<Dim, T> const& a, Triangle<Dim, T> const& b)
+{
+	// TODO: Implement
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Vec<Dim, T> const& a, Vec<Dim, T> const& b)
+{
+	return all(a == b);
+}
 }  // namespace ufo
 
 #endif  // UFO_GEOMETRY_CONTAINS_HPP

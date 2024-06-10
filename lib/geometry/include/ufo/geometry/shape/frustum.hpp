@@ -39,32 +39,33 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef UFO_GEOMETRY_FRUSTUM_HPP
-#define UFO_GEOMETRY_FRUSTUM_HPP
+#ifndef UFO_GEOMETRY_SHAPE_FRUSTUM_HPP
+#define UFO_GEOMETRY_SHAPE_FRUSTUM_HPP
 
 // UFO
-#include <ufo/geometry/plane.hpp>
-#include <ufo/geometry/point.hpp>
+#include <ufo/geometry/shape/plane.hpp>
+#include <ufo/math/vec.hpp>
 
 // STL
-#include <array>
 #include <cmath>
+#include <cstddef>
 
 namespace ufo
 {
+template <class T>
 struct Frustum {
-	Plane top;
-	Plane bottom;
-	Plane left;
-	Plane right;
-	Plane far;
-	Plane near;
+	Plane<T> top;
+	Plane<T> bottom;
+	Plane<T> left;
+	Plane<T> right;
+	Plane<T> far;
+	Plane<T> near;
 
-	constexpr Frustum() noexcept = default;
+	constexpr Frustum() noexcept               = default;
+	constexpr Frustum(Frustum const&) noexcept = default;
 
-	constexpr Frustum(Point pos, Point target, Point up, float vertical_angle,
-	                  float horizontal_angle, float near_distance,
-	                  float far_distance) noexcept
+	constexpr Frustum(Vec<3, T> pos, Vec<3, T> target, Vec<3, T> up, T vertical_angle,
+	                  T horizontal_angle, T near_distance, T far_distance) noexcept
 	    : position(pos)
 	    , target(target)
 	    , up(up)
@@ -111,28 +112,25 @@ struct Frustum {
 		far    = Plane(far_top_right, far_top_left, far_bottom_left);
 	}
 
-	constexpr bool operator==(Frustum const& rhs) const noexcept
+	template <class U>
+	constexpr Frustum(Frustum<U> const& other) noexcept
+	    : top(other.top)
+	    , bottom(other.bottom)
+	    , left(other.left)
+	    , right(other.right)
+	    , far(other.far)
+	    , near(other.near)
 	{
-		return rhs.top == top && rhs.bottom == bottom && rhs.left == left &&
-		       rhs.right == right && rhs.far == far && rhs.near == near;
 	}
 
-	constexpr bool operator!=(Frustum const& rhs) const noexcept { return !(*this == rhs); }
-
-	constexpr Plane operator[](std::size_t idx) const noexcept { return *(&top + idx); }
-
-	constexpr Plane& operator[](std::size_t idx) noexcept { return *(&top + idx); }
-
-	constexpr Point min() const noexcept
+	[[nodiscard]] constexpr Plane& operator[](std::size_t pos) noexcept
 	{
-		// TODO: Implement
-		return Point();
+		return (&top)[pos];
 	}
 
-	constexpr Point max() const noexcept
+	[[nodiscard]] constexpr Plane const& operator[](std::size_t pos) const noexcept
 	{
-		// TODO: Implement
-		return Point();
+		return (&top)[pos];
 	}
 
  private:
@@ -144,6 +142,31 @@ struct Frustum {
 	float near_distance{};
 	float far_distance{};
 };
+
+/*!
+ * @brief Compare two Frustums.
+ *
+ * @param lhs,rhs The Frustums to compare
+ * @return `true` if they compare equal, `false` otherwise.
+ */
+template <class T>
+bool operator==(Frustum<T> const& lhs, Frustum<T> const& rhs)
+{
+	return lhs.top == rhs.top && lhs.bottom == rhs.bottom && lhs.left == rhs.left &&
+	       lhs.right == rhs.right && lhs.far == rhs.far && lhs.near == rhs.near;
+}
+
+/*!
+ * @brief Compare two Frustums.
+ *
+ * @param lhs,rhs The Frustums to compare
+ * @return `true` if they do not compare equal, `false` otherwise.
+ */
+template <class T>
+bool operator!=(Frustum<T> const& lhs, Frustum<T> const& rhs)
+{
+	return !(lhs == rhs);
+}
 }  // namespace ufo
 
-#endif  // UFO_GEOMETRY_FRUSTUM_HPP
+#endif  // UFO_GEOMETRY_SHAPE_FRUSTUM_HPP

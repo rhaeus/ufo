@@ -39,68 +39,72 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef UFO_GEOMETRY_AXIS_ALIGNED_BOUNDING_BOX_HPP
-#define UFO_GEOMETRY_AXIS_ALIGNED_BOUNDING_BOX_HPP
+#ifndef UFO_GEOMETRY_SHAPE_LINE_SEGMENT_HPP
+#define UFO_GEOMETRY_SHAPE_LINE_SEGMENT_HPP
 
 // UFO
-#include <ufo/geometry/point.hpp>
+#include <ufo/math/vec.hpp>
+
+// STL
+#include <cstddef>
 
 namespace ufo
 {
-/*!
- * @brief Something something
- * @author Daniel Duberg
- *
- */
-struct AABB {
-	// The center point of the AABB.
-	Point center;
-	// Half the size of a side of the AABB.
-	Point half_size;
+template <std::size_t Dim = 3, class T = float>
+struct LineSegment {
+	using value_type = T;
 
-	constexpr AABB() noexcept = default;
+	Vec<Dim, T> start;
+	Vec<Dim, T> end;
 
-	constexpr AABB(Point center, float half_size) noexcept
-	    : center(center), half_size(half_size, half_size, half_size)
+	constexpr LineSegment() noexcept                   = default;
+	constexpr LineSegment(LineSegment const&) noexcept = default;
+
+	constexpr LineSegment(Vec<Dim, T> start, Vec<Dim, T> end) noexcept
+	    : start(start), end(end)
 	{
 	}
 
-	constexpr AABB(Point min, Point max) noexcept : half_size((max - min) / 2.0)
+	template <class U>
+	constexpr explicit LineSegment(LineSegment<Dim, U> const& other) noexcept
+	    : start(other.start), end(other.end)
 	{
-		center = min + half_size;
 	}
-
-	/*!
-	 * @brief Compare two AABBs.
-	 *
-	 * @param lhs,rhs The AABBs to compare.
-	 * @return Whether lhs and rhs are equal.
-	 */
-	friend constexpr bool operator==(AABB const& lhs, AABB const& rhs) noexcept
-	{
-		return lhs.center == rhs.center && lhs.half_size == rhs.half_size;
-	}
-
-	/*!
-	 * @brief Compare two AABBs.
-	 *
-	 * @param lhs,rhs The AABBs to compare.
-	 * @return Whether lhs and rhs are different.
-	 */
-	friend constexpr bool operator!=(AABB const& lhs, AABB const& rhs) noexcept
-	{
-		return !(lhs == rhs);
-	}
-
-	/*!
-	 * @brief
-	 *
-	 * @return
-	 */
-	constexpr Point min() const noexcept { return center - half_size; }
-
-	constexpr Point max() const noexcept { return center + half_size; }
 };
+
+using LineSegment1 = LineSegment<1, float>;
+using LineSegment2 = LineSegment<2, float>;
+using LineSegment3 = LineSegment<3, float>;
+using LineSegment4 = LineSegment<4, float>;
+
+using LineSegment1d = LineSegment<1, double>;
+using LineSegment2d = LineSegment<2, double>;
+using LineSegment3d = LineSegment<3, double>;
+using LineSegment4d = LineSegment<4, double>;
+
+/*!
+ * @brief Compare two LineSegments.
+ *
+ * @param lhs,rhs The LineSegments to compare
+ * @return `true` if they compare equal, `false` otherwise.
+ */
+template <std::size_t Dim, class T>
+bool operator==(LineSegment<Dim, T> const& lhs, LineSegment<Dim, T> const& rhs)
+{
+	return lhs.start == rhs.start && lhs.end == rhs.end;
+}
+
+/*!
+ * @brief Compare two LineSegments.
+ *
+ * @param lhs,rhs The LineSegments to compare
+ * @return `true` if they do not compare equal, `false` otherwise.
+ */
+template <std::size_t Dim, class T>
+bool operator!=(LineSegment<Dim, T> const& lhs, LineSegment<Dim, T> const& rhs)
+{
+	return !(lhs == rhs);
+}
 }  // namespace ufo
 
-#endif  // UFO_GEOMETRY_AXIS_ALIGNED_BOUNDING_BOX_HPP
+#endif  // UFO_GEOMETRY_SHAPE_LINE_SEGMENT_HPP
