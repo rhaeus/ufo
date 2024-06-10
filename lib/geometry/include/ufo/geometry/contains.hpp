@@ -134,7 +134,12 @@ template <std::size_t Dim, class T>
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, AABB<Dim, T> const& b)
 {
-	return contains(a, min(b)) && contains(a, max(b));
+	for (auto c : corners(b)) {
+		if (!contains(a, c)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 template <std::size_t Dim, class T>
@@ -153,7 +158,7 @@ template <std::size_t Dim, class T>
 template <class T>
 [[nodiscard]] constexpr bool contains(BS<3, T> const& a, Frustum<T> const& b)
 {
-	return contains(a, min(b)) && contains(a, max(b));
+	return contains(a, AABB<3, T>(min(b), max(b)));
 }
 
 template <std::size_t Dim, class T>
@@ -165,7 +170,7 @@ template <std::size_t Dim, class T>
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, OBB<Dim, T> const& b)
 {
-	return contains(a, min(b)) && contains(a, max(b));
+	return contains(a, AABB<Dim, T>(min(b), max(b)));
 }
 
 template <class T>
