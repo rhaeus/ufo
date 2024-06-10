@@ -97,7 +97,7 @@ template <std::size_t Dim, class T>
 template <class T>
 [[nodiscard]] constexpr bool contains(AABB<3, T> const& a, Plane<T> const& b)
 {
-	// TODO: Implement
+	return false;
 }
 
 template <std::size_t Dim, class T>
@@ -157,7 +157,7 @@ template <std::size_t Dim, class T>
 template <class T>
 [[nodiscard]] constexpr bool contains(BS<3, T> const& a, Plane<T> const& b)
 {
-	// TODO: Implement
+	return false;
 }
 
 template <std::size_t Dim, class T>
@@ -217,7 +217,7 @@ template <class T>
 template <class T>
 [[nodiscard]] constexpr bool contains(Frustum<T> const& a, Plane<T> const& b)
 {
-	// TODO: Implement
+	return false;
 }
 
 template <class T>
@@ -278,7 +278,7 @@ template <std::size_t Dim, class T>
 template <class T>
 [[nodiscard]] constexpr bool contains(LineSegment<3, T> const& a, Plane<T> const& b)
 {
-	// TODO: Implement
+	return false;
 }
 
 template <std::size_t Dim, class T>
@@ -339,7 +339,7 @@ template <std::size_t Dim, class T>
 template <class T>
 [[nodiscard]] constexpr bool contains(OBB<3, T> const& a, Plane<T> const& b)
 {
-	// TODO: Implement
+	return false;
 }
 
 template <std::size_t Dim, class T>
@@ -405,7 +405,7 @@ template <class T>
 template <class T>
 [[nodiscard]] constexpr bool contains(Plane<T> const& a, Ray<3, T> const& b)
 {
-	return false;
+	// TODO: Implement
 }
 
 template <class T>
@@ -524,7 +524,7 @@ template <std::size_t Dim, class T>
 template <class T>
 [[nodiscard]] constexpr bool contains(Triangle<3, T> const& a, Plane<T> const& b)
 {
-	// TODO: Implement
+	return false;
 }
 
 template <std::size_t Dim, class T>
@@ -585,7 +585,7 @@ template <std::size_t Dim, class T>
 template <class T>
 [[nodiscard]] constexpr bool contains(Vec<3, T> const& a, Plane<T> const& b)
 {
-	// TODO: Implement
+	return false;
 }
 
 template <std::size_t Dim, class T>
