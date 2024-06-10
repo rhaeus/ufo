@@ -278,14 +278,14 @@ template <std::size_t Dim, class T>
 template <class T>
 [[nodiscard]] constexpr std::array<Vec<3, T>, 8> corners(Frustum<T> const& a)
 {
-	return corners(AABB<3, T>(min(a), max(a)));
+	// TODO: Implement
 }
 
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr std::array<Vec<Dim, T>, ipow(2, Dim)> corners(
     OBB<Dim, T> const& a)
 {
-	return corners(AABB<Dim, T>(min(a), max(a)));
+	// TODO: Implement
 }
 }  // namespace ufo
 
