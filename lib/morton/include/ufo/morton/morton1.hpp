@@ -46,6 +46,7 @@
 #define UFO_MORTON1_HPP
 
 // UFO
+#include <ufo/math/vec1.hpp>
 #include <ufo/morton/detail/morton.hpp>
 
 // STL
@@ -62,10 +63,12 @@ struct Morton<1> {
 		return x;
 	}
 
-	[[nodiscard]] static constexpr std::uint_fast64_t decode(std::uint_fast64_t c)
+	[[nodiscard]] static constexpr std::uint_fast64_t encode(Vec1u v)
 	{
-		return c;
+		return encode(v.x);
 	}
+
+	[[nodiscard]] static constexpr Vec1u decode(std::uint_fast64_t c) { return Vec1u(c); }
 
 	[[nodiscard]] static constexpr std::uint_fast64_t spread(std::uint_fast64_t v)
 	{

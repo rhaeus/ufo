@@ -46,10 +46,10 @@
 #define UFO_MORTON3_HPP
 
 // UFO
+#include <ufo/math/vec3.hpp>
 #include <ufo/morton/detail/morton.hpp>
 
 // STL
-#include <array>
 #include <cstdint>
 
 #if defined(UFO_BMI2)
@@ -81,13 +81,15 @@ struct Morton<3> {
 #endif
 	}
 
-	[[nodiscard]] static constexpr std::array<std::uint_fast32_t, 3> decode(
-	    std::uint_fast64_t x)
+	[[nodiscard]] static constexpr std::uint_fast64_t encode(Vec3u v)
+	{
+		return encode(v.x, v.y, v.z);
+	}
+
+	[[nodiscard]] static constexpr Vec3u decode(std::uint_fast64_t x)
 	{
 #if defined(UFO_BMI2)
-		return {static_cast<std::uint_fast32_t>(_pext_u64(x, X_MASK)),
-		        static_cast<std::uint_fast32_t>(_pext_u64(x, Y_MASK)),
-		        static_cast<std::uint_fast32_t>(_pext_u64(x, Z_MASK))};
+		return {_pext_u64(x, X_MASK), _pext_u64(x, Y_MASK), _pext_u64(x, Z_MASK)};
 #else
 		return {compact(x), compact(x >> 1), compact(x >> 2)};
 #endif
