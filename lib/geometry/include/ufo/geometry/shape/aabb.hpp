@@ -47,6 +47,7 @@
 
 // STL
 #include <cstddef>
+#include <type_traits>
 
 namespace ufo
 {
@@ -57,6 +58,8 @@ namespace ufo
  */
 template <std::size_t Dim = 3, class T = float>
 struct AABB {
+	static_assert(std::is_floating_point_v<T>, "T is required to be floating point.");
+
 	using value_type = T;
 
 	Vec<Dim, T> min;
@@ -95,6 +98,11 @@ using AABB1 = AABB<1, float>;
 using AABB2 = AABB<2, float>;
 using AABB3 = AABB<3, float>;
 using AABB4 = AABB<4, float>;
+
+using AABB1f = AABB<1, float>;
+using AABB2f = AABB<2, float>;
+using AABB3f = AABB<3, float>;
+using AABB4f = AABB<4, float>;
 
 using AABB1d = AABB<1, double>;
 using AABB2d = AABB<2, double>;
