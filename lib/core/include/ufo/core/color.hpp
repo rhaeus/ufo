@@ -71,6 +71,13 @@ struct Color {
 
 	constexpr Color() = default;
 
+	constexpr Color(value_type v) : alpha(v), blue(v), green(v), red(v) {}
+
+	constexpr Color(value_type v, value_type alpha)
+	    : alpha(alpha), blue(v), green(v), red(v)
+	{
+	}
+
 	constexpr Color(value_type red, value_type green, value_type blue,
 	                value_type alpha = std::numeric_limits<value_type>::max())
 	    : alpha(alpha), blue(blue), green(green), red(red)
