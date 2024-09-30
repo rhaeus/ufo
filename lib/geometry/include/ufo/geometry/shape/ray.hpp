@@ -47,6 +47,7 @@
 
 // STL
 #include <cstddef>
+#include <ostream>
 
 namespace ufo
 {
@@ -104,6 +105,12 @@ template <std::size_t Dim, class T>
 bool operator!=(Ray<Dim, T> const& lhs, Ray<Dim, T> const& rhs)
 {
 	return !(lhs == rhs);
+}
+
+template <std::size_t Dim, class T>
+std::ostream& operator<<(std::ostream& out, Ray<Dim, T> const& ray)
+{
+	return out << "Origin: " << ray.origin << ", Direction: " << ray.direction;
 }
 }  // namespace ufo
 

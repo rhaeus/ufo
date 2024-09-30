@@ -47,6 +47,7 @@
 
 // STL
 #include <cstddef>
+#include <ostream>
 #include <type_traits>
 
 namespace ufo
@@ -131,6 +132,12 @@ template <std::size_t Dim, class T>
 bool operator!=(AABB<Dim, T> const& lhs, AABB<Dim, T> const& rhs)
 {
 	return !(lhs == rhs);
+}
+
+template <std::size_t Dim, class T>
+std::ostream& operator<<(std::ostream& out, AABB<Dim, T> const& aabb)
+{
+	return out << "Min: " << aabb.min << ", Max: " << aabb.max;
 }
 }  // namespace ufo
 

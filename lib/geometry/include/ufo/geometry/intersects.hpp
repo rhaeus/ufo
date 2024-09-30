@@ -43,6 +43,7 @@
 #define UFO_GEOMETRY_INTERSECTS_HPP
 
 // UFO
+#include <ufo/geometry/detail/helper.hpp>
 #include <ufo/geometry/shape/aabb.hpp>
 #include <ufo/geometry/shape/bs.hpp>
 #include <ufo/geometry/shape/capsule.hpp>
@@ -150,7 +151,7 @@ template <class T>
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool intersects(AABB<Dim, T> const& a, Ray<Dim, T> const& b)
 {
-	return intersectsLine(a, b, T(0), std::numeric_limits<T>::max());
+	return detail::intersectsLine(a, b, T(0), std::numeric_limits<T>::max());
 }
 
 // template <std::size_t Dim, class T>
