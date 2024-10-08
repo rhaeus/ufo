@@ -71,6 +71,11 @@ struct Ray {
 	    : origin(other.origin), direction(other.direction)
 	{
 	}
+
+	[[nodiscard]] constexpr Vec<Dim, T> step(float t) const
+	{
+		return origin + t * direction;
+	}
 };
 
 using Ray1 = Ray<1, float>;
