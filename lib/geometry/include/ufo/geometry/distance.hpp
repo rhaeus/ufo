@@ -536,12 +536,24 @@ template <std::size_t Dim, class T>
 // 	// TODO: Implement
 // }
 
-// template <std::size_t Dim, class T>
-// [[nodiscard]] constexpr T distanceSquared(LineSegment<Dim, T> const& a,
-//                                           Vec<Dim, T> const&         b)
-// {
-// 	// TODO: Implement
-// }
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr T distanceSquared(LineSegment<Dim, T> const& a,
+                                          Vec<Dim, T> const&         b)
+{
+	// Return minimum distance between line segment vw and point p
+	auto const l2 = distanceSquared(a.start, a.end);  // i.e. |w-v|^2 -  avoid a sqrt
+	if (T(0) == l2) {
+		return distanceSquared(b, a.start);  // v == w case
+	}
+	// Consider the line extending the segment, parameterized as v + t (w - v).
+	// We find projection of point p onto the line.
+	// It falls where t = [(p-v) . (w-v)] / |w-v|^2
+	// We clamp t from [0,1] to handle points outside the segment vw.
+	auto const t = std::max(T(0), std::min(T(1), dot(b - a.start, a.end - a.start) / l2));
+	auto const projection =
+	    a.start + t * (a.end - a.start);  // Projection falls on the segment
+	return distanceSquared(b, projection);
+}
 
 // template <std::size_t Dim, class T>
 // [[nodiscard]] constexpr T distance(LineSegment<Dim, T> const& a, Vec<Dim, T> const& b)
