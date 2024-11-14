@@ -17,24 +17,24 @@ option(UFO_DOCS     "Documentation build" OFF)
 
 # add_subdirectory(1stparty)
 
-add_library(ufocompute INTERFACE)
-add_library(UFO::Compute ALIAS ufocompute)
+add_library(Compute INTERFACE)
+add_library(UFO::Compute ALIAS Compute)
 
-set_target_properties(ufocompute PROPERTIES
+set_target_properties(Compute PROPERTIES
 	INTERFACE_VERSION ${PROJECT_VERSION}
 	INTERFACE_SOVERSION ${PROJECT_VERSION_MAJOR}
 	INTERFACE_CXX_STANDARD 17
 	INTERFACE_CXX_EXTENSIONS OFF
 )
 
-# target_link_libraries(ufocompute INTERFACE UFO::Utility)
+# target_link_libraries(Compute INTERFACE UFO::Utility)
 
-target_include_directories(ufocompute INTERFACE
+target_include_directories(Compute INTERFACE
 	$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 	$<INSTALL_INTERFACE:include>
 )
 
-target_compile_features(ufocompute INTERFACE cxx_std_17)
+target_compile_features(Compute INTERFACE cxx_std_17)
 
 include(GNUInstallDirs)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/
@@ -49,7 +49,7 @@ if(UFO_DOCS)
 	add_subdirectory(docs)
 endif()
 
-install(TARGETS ufocompute
+install(TARGETS Compute
 	EXPORT ufocomputeTargets
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
