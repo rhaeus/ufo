@@ -50,7 +50,7 @@
 
 namespace ufo
 {
-template <std::size_t Dim = 0>
+template <std::size_t Dim>
 struct Morton;
 }  // namespace ufo
 
