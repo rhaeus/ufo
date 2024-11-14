@@ -8,24 +8,24 @@ project(ufomorton
 
 add_subdirectory(1stparty)
 
-add_library(ufomorton INTERFACE)
-add_library(UFO::Morton ALIAS ufomorton)
+add_library(Morton INTERFACE)
+add_library(UFO::Morton ALIAS Morton)
 
-set_target_properties(ufomorton PROPERTIES
+set_target_properties(Morton PROPERTIES
 	VERSION ${PROJECT_VERSION}
 	SOVERSION ${PROJECT_VERSION_MAJOR}
 	CXX_STANDARD 17
 	CXX_EXTENSIONS OFF
 )
 
-target_link_libraries(ufomorton INTERFACE UFO::Math)
+target_link_libraries(Morton INTERFACE UFO::Math)
 
-target_include_directories(ufomorton INTERFACE
+target_include_directories(Morton INTERFACE
 	$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 	$<INSTALL_INTERFACE:include>
 )
 
-target_compile_features(ufomorton INTERFACE cxx_std_17)
+target_compile_features(Morton INTERFACE cxx_std_17)
 
 include(GNUInstallDirs)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/
@@ -35,19 +35,19 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/
 # Only enable tests when we're the root project
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 	# Treat warnings as errors
-	# set_target_properties(ufomorton PROPERTIES COMPILE_WARNING_AS_ERROR ON)
+	# set_target_properties(Morton PROPERTIES COMPILE_WARNING_AS_ERROR ON)
 
 	# # Turn all warnings on
 	# if (MSVC)
-	# 	target_compile_options(ufomorton INTERFACE /W4)
+	# 	target_compile_options(Morton INTERFACE /W4)
 	# else()
-	# 	target_compile_options(ufomorton INTERFACE -Wall -Wextra -pedantic)
+	# 	target_compile_options(Morton INTERFACE -Wall -Wextra -pedantic)
 	# endif()
 
   add_subdirectory(tests)
 endif()
 
-install(TARGETS ufomorton
+install(TARGETS Morton
 	EXPORT ufomortonTargets
 	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
