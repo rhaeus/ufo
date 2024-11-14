@@ -66,72 +66,136 @@ namespace ufo
 {
 template <>
 struct Morton<3> {
-	static constexpr std::uint_fast64_t const X_MASK = 0x1249249249249249;
-	static constexpr std::uint_fast64_t const Y_MASK = 0x2492492492492492;
-	static constexpr std::uint_fast64_t const Z_MASK = 0x4924924924924924;
+	static constexpr std::uint32_t const X_M_32 = 0x9249249;
+	static constexpr std::uint32_t const Y_M_32 = X_M_32 << 1;
+	static constexpr std::uint32_t const Z_M_32 = X_M_32 << 2;
 
-	[[nodiscard]] static constexpr std::uint_fast64_t encode(std::uint_fast32_t x,
-	                                                         std::uint_fast32_t y,
-	                                                         std::uint_fast32_t z)
+	static constexpr std::uint64_t const X_M_64 = 0x1249249249249249;
+	static constexpr std::uint64_t const Y_M_64 = X_M_64 << 1;
+	static constexpr std::uint64_t const Z_M_64 = X_M_64 << 2;
+
+	static constexpr std::size_t const LEVELS_32 = 10;  // floor(32 / 3)
+	static constexpr std::size_t const LEVELS_64 = 21;  // floor(64 / 3)
+
+	[[nodiscard]] static constexpr std::uint32_t encode32(std::uint32_t x, std::uint32_t y,
+	                                                      std::uint32_t z)
 	{
 #if defined(UFO_BMI2)
-		return _pdep_u64(static_cast<std::uint_fast64_t>(x), X_MASK) |
-		       _pdep_u64(static_cast<std::uint_fast64_t>(y), Y_MASK) |
-		       _pdep_u64(static_cast<std::uint_fast64_t>(z), Z_MASK);
+		return _pdep_u32(x, X_M_32) | _pdep_u32(y, Y_M_32) | _pdep_u32(z, Z_M_32);
 #else
-		return spread(x) | (spread(y) << 1) | (spread(z) << 2);
+		return spread32(x) | (spread32(y) << 1) | (spread32(z) << 2);
 #endif
 	}
 
-	[[nodiscard]] static constexpr std::uint_fast64_t encode(Vec3u v)
+	[[nodiscard]] static constexpr std::uint32_t encode32(Vec3u const& v)
 	{
-		return encode(v.x, v.y, v.z);
+		return encode32(v.x, v.y, v.z);
 	}
 
-	[[nodiscard]] static constexpr Vec3u decode(std::uint_fast64_t x)
+	[[nodiscard]] static constexpr std::uint64_t encode64(std::uint32_t x, std::uint32_t y,
+	                                                      std::uint32_t z)
 	{
 #if defined(UFO_BMI2)
-		return {_pext_u64(x, X_MASK), _pext_u64(x, Y_MASK), _pext_u64(x, Z_MASK)};
+		return _pdep_u64(x, X_M_64) | _pdep_u64(y, Y_M_64) | _pdep_u64(z, Z_M_64);
 #else
-		return {compact(x), compact(x >> 1), compact(x >> 2)};
+		return spread64(x) | (spread64(y) << 1) | (spread64(z) << 2);
 #endif
 	}
 
-	[[nodiscard]] static constexpr std::uint_fast32_t decode(std::uint_fast64_t x,
-	                                                         std::size_t        pos)
+	[[nodiscard]] static constexpr std::uint64_t encode64(Vec3u const& v)
+	{
+		return encode64(v.x, v.y, v.z);
+	}
+
+	[[nodiscard]] static constexpr Vec3u decode32(std::uint32_t m)
+	{
+#if defined(UFO_BMI2)
+		return Vec3u(_pdep_u32(m, X_M_32), _pdep_u32(m, Y_M_32), _pdep_u32(m, Z_M_32));
+#else
+		return Vec3u(compact32(m), compact32(m >> 1), compact32(m >> 2));
+#endif
+	}
+
+	[[nodiscard]] static constexpr std::uint32_t decode32(std::uint32_t m, std::size_t pos)
 	{
 		assert(3 > pos);
-		return compact(x >> pos);
+		return compact32(m >> pos);
 	}
 
-	[[nodiscard]] static constexpr std::uint_fast64_t spread(std::uint_fast32_t v)
+	[[nodiscard]] static constexpr Vec3u decode64(std::uint64_t m)
 	{
 #if defined(UFO_BMI2)
-		return _pdep_u64(static_cast<std::uint_fast64_t>(x), X_MASK);
+		return Vec3u(_pdep_u64(m, X_M_64), _pdep_u64(m, Y_M_64), _pdep_u64(m, Z_M_64));
 #else
-		std::uint_fast64_t x(v);
-		x &= 0x1FFFFF;
-		x = (x | x << 32) & 0x1F00000000FFFF;
-		x = (x | x << 16) & 0x1F0000FF0000FF;
-		x = (x | x << 8) & 0x100F00F00F00F00F;
-		x = (x | x << 4) & 0x10C30C30C30C30C3;
-		x = (x | x << 2) & 0x1249249249249249;
+		return Vec3u(compact64(m), compact64(m >> 1), compact64(m >> 2));
+#endif
+	}
+
+	[[nodiscard]] static constexpr std::uint32_t decode64(std::uint64_t m, std::size_t pos)
+	{
+		assert(3 > pos);
+		return compact64(m >> pos);
+	}
+
+	[[nodiscard]] static constexpr std::uint32_t spread32(std::uint32_t x)
+	{
+#if defined(UFO_BMI2)
+		return _pdep_u32(x, X_M_32);
+#else
+		std::uint32_t m(x);
+		m &= 0x3FF;
+		m = (m | m << 16) & 0x30000FF;
+		m = (m | m << 8) & 0x300F00F;
+		m = (m | m << 4) & 0x30C30C3;
+		m = (m | m << 2) & X_M_32;
+		return m;
+#endif
+	}
+
+	[[nodiscard]] static constexpr std::uint64_t spread64(std::uint32_t x)
+	{
+#if defined(UFO_BMI2)
+		return _pdep_u64(x, X_M_64);
+#else
+		std::uint64_t m(x);
+		m &= 0x1FFFFF;
+		m = (m | m << 32) & 0x1F00000000FFFF;
+		m = (m | m << 16) & 0x1F0000FF0000FF;
+		m = (m | m << 8) & 0x100F00F00F00F00F;
+		m = (m | m << 4) & 0x10C30C30C30C30C3;
+		m = (m | m << 2) & X_M_64;
+		return m;
+#endif
+	}
+
+	[[nodiscard]] static constexpr std::uint32_t compact32(std::uint32_t m)
+	{
+#if defined(UFO_BMI2)
+		return _pext_u32(m, X_M_32);
+#else
+		std::uint32_t x(m);
+		x &= X_M_32;
+		x = (x ^ (x >> 2)) & 0x30C30C3;
+		x = (x ^ (x >> 4)) & 0x300F00F;
+		x = (x ^ (x >> 8)) & 0x30000FF;
+		x = (x ^ (x >> 16)) & 0x3FF;
 		return x;
 #endif
 	}
 
-	[[nodiscard]] static constexpr std::uint_fast32_t compact(std::uint_fast64_t x)
+	[[nodiscard]] static constexpr std::uint32_t compact64(std::uint64_t m)
 	{
 #if defined(UFO_BMI2)
-		return static_cast<std::uint_fast32_t>(_pext_u64(x, X_MASK));
+		return static_cast<std::uint32_t>(_pext_u64(m, X_M_64));
 #else
-		x &= 0x1249249249249249;
+		std::uint64_t x(m);
+		x &= X_M_64;
 		x = (x ^ (x >> 2)) & 0x10C30C30C30C30C3;
 		x = (x ^ (x >> 4)) & 0x100F00F00F00F00F;
 		x = (x ^ (x >> 8)) & 0x1F0000FF0000FF;
 		x = (x ^ (x >> 16)) & 0x1F00000000FFFF;
 		x = (x ^ (x >> 32)) & 0x1FFFFF;
-		return static_cast<std::uint_fast32_t>(x);
+		return static_cast<std::uint32_t>(x);
 #endif
 	}
 };

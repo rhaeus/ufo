@@ -58,36 +58,43 @@ namespace ufo
 {
 template <>
 struct Morton<1> {
-	static constexpr std::uint_fast64_t const X_MASK = 0xffffffffffffffff;
+	static constexpr std::uint32_t const X_M_32 = 0xffffffff;
+	static constexpr std::uint64_t const X_M_64 = 0xffffffffffffffff;
 
-	[[nodiscard]] static constexpr std::uint_fast64_t encode(std::uint_fast64_t x)
-	{
-		return x;
-	}
+	static constexpr std::size_t const LEVELS_32 = 32;  // floor(32 / 1)
+	static constexpr std::size_t const LEVELS_64 = 64;  // floor(64 / 1)
 
-	[[nodiscard]] static constexpr std::uint_fast64_t encode(Vec1u v)
-	{
-		return encode(v.x);
-	}
+	[[nodiscard]] static constexpr std::uint32_t encode32(std::uint32_t x) { return x; }
 
-	[[nodiscard]] static constexpr Vec1u decode(std::uint_fast64_t c) { return Vec1u(c); }
+	[[nodiscard]] static constexpr std::uint32_t encode32(Vec1u v) { return encode32(v.x); }
 
-	[[nodiscard]] static constexpr std::uint_fast64_t decode(std::uint_fast64_t x,
-	                                                         std::size_t        pos)
+	[[nodiscard]] static constexpr std::uint64_t encode64(std::uint64_t x) { return x; }
+
+	[[nodiscard]] static constexpr std::uint64_t encode64(Vec1u v) { return encode64(v.x); }
+
+	[[nodiscard]] static constexpr Vec1u decode32(std::uint32_t m) { return Vec1u(m); }
+
+	[[nodiscard]] static constexpr std::uint32_t decode32(std::uint32_t m, std::size_t pos)
 	{
 		assert(1 > pos);
-		return compact(x >> pos);
+		return compact32(m >> pos);
 	}
 
-	[[nodiscard]] static constexpr std::uint_fast64_t spread(std::uint_fast64_t v)
+	[[nodiscard]] static constexpr Vec1u decode64(std::uint64_t m) { return Vec1u(m); }
+
+	[[nodiscard]] static constexpr std::uint64_t decode64(std::uint64_t m, std::size_t pos)
 	{
-		return v;
+		assert(1 > pos);
+		return compact64(m >> pos);
 	}
 
-	[[nodiscard]] static constexpr std::uint_fast64_t compact(std::uint_fast64_t x)
-	{
-		return x;
-	}
+	[[nodiscard]] static constexpr std::uint32_t spread32(std::uint32_t x) { return x; }
+
+	[[nodiscard]] static constexpr std::uint64_t spread64(std::uint64_t x) { return x; }
+
+	[[nodiscard]] static constexpr std::uint32_t compact32(std::uint32_t m) { return m; }
+
+	[[nodiscard]] static constexpr std::uint64_t compact64(std::uint64_t m) { return m; }
 };
 }  // namespace ufo
 
