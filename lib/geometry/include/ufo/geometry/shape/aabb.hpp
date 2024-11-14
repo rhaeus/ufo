@@ -69,10 +69,13 @@ struct AABB {
 	constexpr AABB() noexcept            = default;
 	constexpr AABB(AABB const&) noexcept = default;
 
-	constexpr AABB(Vec<Dim, T> min, Vec<Dim, T> max) noexcept : min(min), max(max) {}
+	constexpr AABB(Vec<Dim, T> const& min, Vec<Dim, T> const& max) noexcept
+	    : min(min), max(max)
+	{
+	}
 
-	constexpr AABB(Vec<Dim, T> center, T half_size) noexcept
-	    : min(center - half_size), max(center + half_size)
+	constexpr AABB(Vec<Dim, T> const& center, T half_length) noexcept
+	    : min(center - half_length), max(center + half_length)
 	{
 	}
 
