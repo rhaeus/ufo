@@ -43,6 +43,7 @@
 #define UFO_GEOMETRY_HELPER_HPP
 
 // UFO
+#include <ufo/geometry/fun.hpp>
 #include <ufo/geometry/shape/aabb.hpp>
 #include <ufo/geometry/shape/bs.hpp>
 #include <ufo/geometry/shape/frustum.hpp>
@@ -50,7 +51,6 @@
 #include <ufo/geometry/shape/obb.hpp>
 #include <ufo/geometry/shape/plane.hpp>
 #include <ufo/geometry/shape/ray.hpp>
-#include <ufo/geometry/fun.hpp>
 
 namespace ufo::detail
 {
@@ -275,6 +275,188 @@ template <std::size_t Dim, class T>
 // 	auto [b_min, b_max] = getInterval(obb_2, axis);
 // 	return ((b_min <= a_max) && (a_min <= b_max));
 // }
+
+// SOMETHING BELOW
+
+// Returns the closest point from an infinite 3D line to 3D box face, plus the closest "t"
+// along o+t*d Based on
+// https://www.geometrictools.com/Documentation/DistanceLine3Rectangle3.pdf The box is
+// axis aligned, centered at the origin, and d is expected to point towards the first
+// octant (reflected s.t. all d components are positive).
+//   i - the indirection indices for the face
+//   o - the origin of the segment
+//   d - the direction along the segment (which does not need to be normalized)
+//   b - the box radius (3 half side lengths)
+inline Vec4f lineFaceQuery(Vec3i i, Vec3f o, Vec3f d, Vec3f b)
+{
+	Vec3f PmE = o - b;
+	Vec3f PpE = o + b;
+
+	Vec3f bi   = Vec3f(b[i[0]], b[i[1]], b[i[2]]);
+	Vec3f oi   = Vec3f(o[i[0]], o[i[1]], o[i[2]]);
+	Vec3f di   = Vec3f(d[i[0]], d[i[1]], d[i[2]]);
+	Vec3f PmEi = Vec3f(PmE[i[0]], PmE[i[1]], PmE[i[2]]);
+	Vec3f PpEi = Vec3f(PpE[i[0]], PpE[i[1]], PpE[i[2]]);
+
+	Vec4f c;
+	if (di[0] * PpEi[1] >= di[1] * PmEi[0]) {
+		if (di[0] * PpEi[2] >= di[2] * PmEi[0]) {
+			// v[i1] >= -e[i1], v[i2] >= -e[i2] (distance = 0)
+			c = Vec4f(bi[0], oi[1] - di[1] * PmEi[0] / di[0], oi[2] - di[2] * PmEi[0] / di[0],
+			          -PmEi[0] / di[0]);
+		} else {
+			// v[i1] >= -e[i1], v[i2] < -e[i2]
+			float lenSqr = di[0] * di[0] + di[2] * di[2];
+			float tmp    = lenSqr * PpEi[1] - di[1] * (di[0] * PmEi[0] + di[2] * PpEi[2]);
+			if (tmp <= 2. * lenSqr * bi[1]) {
+				float t = tmp / lenSqr;
+				lenSqr += di[1] * di[1];
+				tmp         = PpEi[1] - t;
+				float delta = di[0] * PmEi[0] + di[1] * tmp + di[2] * PpEi[2];
+				c           = Vec4f(bi[0], t - bi[1], -bi[2], -delta / lenSqr);
+			} else {
+				lenSqr += di[1] * di[1];
+				float delta = di[0] * PmEi[0] + di[1] * PmEi[1] + di[2] * PpEi[2];
+				c           = Vec4f(bi[0], bi[1], -bi[2], -delta / lenSqr);
+			}
+		}
+	} else {
+		if (di[0] * PpEi[2] >= di[2] * PmEi[0]) {
+			// v[i1] < -e[i1], v[i2] >= -e[i2]
+			float lenSqr = di[0] * di[0] + di[1] * di[1];
+			float tmp    = lenSqr * PpEi[2] - di[2] * (di[0] * PmEi[0] + di[1] * PpEi[1]);
+			if (tmp <= 2. * lenSqr * bi[2]) {
+				float t = tmp / lenSqr;
+				lenSqr += di[2] * di[2];
+				tmp         = PpEi[2] - t;
+				float delta = di[0] * PmEi[0] + di[1] * PpEi[1] + di[2] * tmp;
+				c           = Vec4f(bi[0], -bi[1], t - bi[2], -delta / lenSqr);
+			} else {
+				lenSqr += di[2] * di[2];
+				float delta = di[0] * PmEi[0] + di[1] * PpEi[1] + di[2] * PmEi[2];
+				c           = Vec4f(bi[0], -bi[1], bi[2], -delta / lenSqr);
+			}
+		} else {
+			// v[i1] < -e[i1], v[i2] < -e[i2]
+			float lenSqr = di[0] * di[0] + di[2] * di[2];
+			float tmp    = lenSqr * PpEi[1] - di[1] * (di[0] * PmEi[0] + di[2] * PpEi[2]);
+			if (tmp >= 0.) {
+				// v[i1]-edge is c
+				if (tmp <= 2. * lenSqr * bi[1]) {
+					float t = tmp / lenSqr;
+					lenSqr += di[1] * di[1];
+					tmp         = PpEi[1] - t;
+					float delta = di[0] * PmEi[0] + di[1] * tmp + di[2] * PpEi[2];
+					c           = Vec4f(bi[0], t - bi[1], -bi[2], -delta / lenSqr);
+				} else {
+					lenSqr += di[1] * di[1];
+					float delta = di[0] * PmEi[0] + di[1] * PmEi[1] + di[2] * PpEi[2];
+					c           = Vec4f(bi[0], bi[1], -bi[2], -delta / lenSqr);
+				}
+			} else {
+				lenSqr = di[0] * di[0] + di[1] * di[1];
+				tmp    = lenSqr * PpEi[2] - di[2] * (di[0] * PmEi[0] + di[1] * PpEi[1]);
+				if (tmp >= 0.) {
+					// v[i2]-edge is c
+					if (tmp <= 2. * lenSqr * bi[2]) {
+						float t = tmp / lenSqr;
+						lenSqr += di[2] * di[2];
+						tmp         = PpEi[2] - t;
+						float delta = di[0] * PmEi[0] + di[1] * PpEi[1] + di[2] * tmp;
+						c           = Vec4f(bi[0], -bi[1], t - bi[2], -delta / lenSqr);
+					} else {
+						lenSqr += di[2] * di[2];
+						float delta = di[0] * PmEi[0] + di[1] * PpEi[1] + di[2] * PmEi[2];
+						c           = Vec4f(bi[0], -bi[1], bi[2], -delta / lenSqr);
+					}
+				} else {
+					// (v[i1],v[i2])-corner is c
+					lenSqr += di[2] * di[2];
+					float delta = di[0] * PmEi[0] + di[1] * PpEi[1] + di[2] * PpEi[2];
+					c           = Vec4f(bi[0], -bi[1], -bi[2], -delta / lenSqr);
+				}
+			}
+		}
+	}
+
+	Vec3i map;
+	map[i[0]] = 0;
+	map[i[1]] = 1;
+	map[i[2]] = 2;
+	return Vec4f(c[map[0]], c[map[1]], c[map[2]], c.w);
+}
+
+// Returns the closest point from an infinite 3D line to a 3D box,  plus the closest "t"
+// along o+t*d
+//   o - the origin of the segment
+//   d - the direction along the segment (which does not need to be normalized)
+//   b - the box radius (3 half side lengths)
+inline Vec4f lineBoxQuery(Vec3f o, Vec3f d, Vec3f b)
+{
+	Vec4f closest;
+
+	// Transform the line direction to the first octant using reflections.
+	Vec<3, bool> reflected = lessThan(d, Vec3f(0.0f));
+	o                      = mix(o, -o, reflected);
+	d                      = mix(d, -d, reflected);
+
+	// point minus extent
+	Vec3f PmE = o - b;
+
+	// face indices
+	Vec3i i;
+
+	// line intersects planes x or z
+	if (d[1] * PmE[0] >= d[0] * PmE[1])
+		// line intersects x = e0 if true, z = e2 if false
+		i = (d[2] * PmE[0] >= d[0] * PmE[2]) ? Vec3i(0, 1, 2) : Vec3i(2, 0, 1);
+	// line intersects planes y or z
+	else
+		// line intersects y = e1 if true, z = e2 if false
+		i = (d[2] * PmE[1] >= d[1] * PmE[2]) ? Vec3i(1, 2, 0) : Vec3i(2, 0, 1);
+
+	// Query closest point on face
+	closest = lineFaceQuery(i, o, d, b);
+
+	// Account for previously applied reflections.
+	auto c = mix(static_cast<Vec3f>(closest), static_cast<Vec3f>(-closest), reflected);
+	return Vec4f(c.x, c.y, c.z, closest.w);
+}
+
+// Returns the closest point from a 3D point to a 3D box
+// The box is axis aligned, and centered at the origin
+//   o - the query origin
+//   b - the box radius (3 half side lengths)
+inline Vec3f pointBoxQuery(Vec3f o, Vec3f b)
+{
+	Vec3f closest = o;
+	for (int i = 0; i < 3; ++i) {
+		if (o[i] < -b[i])
+			closest[i] = -b[i];
+		else if (o[i] > b[i])
+			closest[i] = b[i];
+	}
+	return closest;
+}
+
+// Returns the closest point from a finite 3D segment to a 3D box, plus the closest "t"
+// along o+t*d
+//   s - the start of the segment
+//   e - the end of the segment
+//   b - the box radius (3 half side lengths)
+inline Vec4f segmentBoxQuery(Vec3f s, Vec3f e, Vec3f b)
+{
+	Vec3f o        = s;
+	Vec3f d        = e - s;
+	Vec4f lbOutput = lineBoxQuery(o, d, b);
+	// If closest is within the segment, return that result directly
+	if (lbOutput.w >= 0. && lbOutput.w <= 1.) return lbOutput;
+
+	// Otherwise, compute the closest point to either side of the segment
+	float parameter = (lbOutput.w < 0.) ? 0. : 1.;
+	Vec3f pbOutput  = pointBoxQuery(o + d * parameter, b);
+	return Vec4f(pbOutput, parameter);
+}
 
 }  // namespace ufo::detail
 

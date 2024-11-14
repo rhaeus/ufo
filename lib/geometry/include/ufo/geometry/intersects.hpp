@@ -43,6 +43,7 @@
 #define UFO_GEOMETRY_INTERSECTS_HPP
 
 // UFO
+#include <ufo/geometry/closest_point.hpp>
 #include <ufo/geometry/detail/helper.hpp>
 #include <ufo/geometry/shape/aabb.hpp>
 #include <ufo/geometry/shape/bs.hpp>
@@ -81,12 +82,27 @@ template <std::size_t Dim, class T>
 	return distance_squared <= radius_squared;
 }
 
-// template <std::size_t Dim, class T>
-// [[nodiscard]] constexpr bool intersects(AABB<Dim, T> const& a, Capsule<Dim, T> const&
-// b)
-// {
-// 	// TODO: Implement
-// }
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool intersects(AABB<Dim, T> const& a, Capsule<Dim, T> const& b)
+{
+	// if (intersects(a, BS(b.start, b.radius)) || intersects(a, BS(b.end, b.radius))) {
+	// 	return true;
+	// }
+
+	// auto        c  = a.center();
+	// auto        hl = a.halfLength();
+	// LineSegment ls(b.start - c, b.end - c);
+
+	// auto r = detail::segmentBoxQuery(ls.start, ls.end, hl);
+
+	// auto closest_point = mix(b.start, b.end, r.w);
+
+	// return b.radius * b.radius >= distanceSquared(a, closest_point);
+
+	// // TODO: Implement correct
+	return intersects(a, BS(b.start, b.radius)) || intersects(a, BS(b.end, b.radius)) ||
+	       intersects(a, LineSegment(b.start, b.end));
+}
 
 // template <class T>
 // [[nodiscard]] constexpr bool intersects(AABB<3, T> const& a, Frustum<T> const& b)
@@ -105,7 +121,7 @@ template <std::size_t Dim, class T>
 	ray.direction = b.end - b.start;
 	T length      = norm(ray.direction);
 	ray.direction /= length;
-	return intersectsLine(a, ray, T(0), length);
+	return detail::intersectsLine(a, ray, T(0), length);
 }
 
 // template <std::size_t Dim, class T>
@@ -209,7 +225,7 @@ template <std::size_t Dim, class T>
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool intersects(AABB<Dim, T> const& a, Vec<Dim, T> const& b)
 {
-	return all(min(a) <= b && b <= max(a));
+	return all(lessThanEqual(min(a), b)) && all(lessThanEqual(b, max(a)));
 }
 
 /**************************************************************************************

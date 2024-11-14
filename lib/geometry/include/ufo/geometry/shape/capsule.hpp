@@ -59,7 +59,7 @@ struct Capsule {
 	constexpr Capsule() noexcept               = default;
 	constexpr Capsule(Capsule const&) noexcept = default;
 
-	constexpr Capsule(Vec<Dim, T> start, Vec<Dim, T> end, T radius) noexcept
+	constexpr Capsule(Vec<Dim, T> const& start, Vec<Dim, T> const& end, T radius) noexcept
 	    : start(start), end(end), radius(radius)
 	{
 	}
