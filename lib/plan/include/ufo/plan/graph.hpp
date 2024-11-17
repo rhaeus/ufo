@@ -88,7 +88,7 @@ class PlanGraph
 	                                                  Node const& goal, CostFun cost_f,
 	                                                  HeuristicFun heuristic_f) const
 	{
-		assert(!start.empty());
+		assert(!starts.empty());
 		assert(std::all_of(starts.begin(), starts.end(),
 		                   [](Node const& n) { return nullptr != n; }));
 		assert(nullptr != goal);
@@ -239,7 +239,7 @@ class PlanGraph
 	                                                    Node const& goal, CostFun cost_f,
 	                                                    HeuristicFun heuristic_f) const
 	{
-		assert(!start.empty());
+		assert(!starts.empty());
 		assert(std::all_of(starts.begin(), starts.end(),
 		                   [](Node const& n) { return nullptr != n; }));
 		assert(nullptr != goal);
