@@ -1,13 +1,18 @@
 add_library(Geometry INTERFACE)
 add_library(UFO::Geometry ALIAS Geometry)
 
-target_link_libraries(Geometry INTERFACE UFO::Utility)
+target_link_libraries(Geometry 
+	INTERFACE 
+		UFO::Math
+)
 
-set_target_properties(Geometry PROPERTIES
-	INTERFACE_VERSION ${PROJECT_VERSION}
-	INTERFACE_SOVERSION ${PROJECT_VERSION_MAJOR}
-	INTERFACE_CXX_STANDARD 17
-	INTERFACE_CXX_EXTENSIONS OFF
+set_target_properties(Geometry 
+	PROPERTIES
+		INTERFACE_VERSION ${PROJECT_VERSION}
+		INTERFACE_SOVERSION ${PROJECT_VERSION_MAJOR}
+		INTERFACE_CXX_STANDARD 17
+		INTERFACE_CXX_EXTENSIONS OFF
+		OUTPUT_NAME "UFOGeometry"
 )
 
 include(GNUInstallDirs)
