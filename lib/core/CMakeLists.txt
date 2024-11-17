@@ -6,15 +6,6 @@ target_link_libraries(Core
 		UFO::Math
 )
 
-set_target_properties(Core 
-	PROPERTIES
-		INTERFACE_VERSION ${PROJECT_VERSION}
-		INTERFACE_SOVERSION ${PROJECT_VERSION_MAJOR}
-		INTERFACE_CXX_STANDARD 17
-		INTERFACE_CXX_EXTENSIONS OFF
-		OUTPUT_NAME "UFOCore"
-)
-
 include(GNUInstallDirs)
 
 target_include_directories(Core 
