@@ -26,6 +26,10 @@ class PlanGraph
 	using Edge = PlanEdge<Dim, T>;
 	using Path = PlanPath<Dim, T>;
 
+	// Iterators
+	using iterator       = typename TreeMap<Dim, Node>::iterator;
+	using const_iterator = typename TreeMap<Dim, Node>::const_iterator;
+
 	[[nodiscard]] std::tuple<Path, float, float> plan(Node const& start, Node const& goal,
 	                                                  float distance_weight  = 1.0f,
 	                                                  float edge_cost_weight = 1.0f,
@@ -438,6 +442,18 @@ class PlanGraph
 		}
 		return res;
 	}
+
+	iterator begin() { return graph_.begin(); }
+
+	iterator end() { return graph_.end(); }
+
+	const_iterator begin() const { return graph_.cbegin(); }
+
+	const_iterator end() const { return graph_.cend(); }
+
+	const_iterator cbegin() const { return begin(); }
+
+	const_iterator cend() const { return end(); }
 
  private:
 	TreeMap<Dim, Node> graph_;
