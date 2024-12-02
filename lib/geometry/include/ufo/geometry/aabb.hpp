@@ -39,8 +39,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef UFO_GEOMETRY_BOX_HPP
-#define UFO_GEOMETRY_BOX_HPP
+#ifndef UFO_GEOMETRY_AABB_HPP
+#define UFO_GEOMETRY_AABB_HPP
 
 // UFO
 #include <ufo/math/vec.hpp>
@@ -58,7 +58,7 @@ namespace ufo
  *
  */
 template <std::size_t Dim = 3, class T = float>
-struct Box {
+struct AABB {
 	static_assert(std::is_floating_point_v<T>, "T is required to be floating point.");
 
 	using value_type = T;
@@ -66,22 +66,22 @@ struct Box {
 	Vec<Dim, T> min;
 	Vec<Dim, T> max;
 
-	constexpr Box() noexcept = default;
+	constexpr AABB() noexcept = default;
 
-	constexpr Box(Vec<Dim, T> const& min, Vec<Dim, T> const& max) noexcept
+	constexpr AABB(Vec<Dim, T> const& min, Vec<Dim, T> const& max) noexcept
 	    : min(min), max(max)
 	{
 	}
 
-	constexpr Box(Vec<Dim, T> const& center, T half_length) noexcept
+	constexpr AABB(Vec<Dim, T> const& center, T half_length) noexcept
 	    : min(center - half_length), max(center + half_length)
 	{
 	}
 
-	constexpr Box(Box const&) noexcept = default;
+	constexpr AABB(AABB const&) noexcept = default;
 
 	template <class U>
-	constexpr explicit Box(Box<Dim, U> const& other) noexcept
+	constexpr explicit AABB(AABB<Dim, U> const& other) noexcept
 	    : min(other.min), max(other.max)
 	{
 	}
@@ -106,59 +106,59 @@ struct Box {
 //
 
 template <std::size_t Dim, class T>
-Box(Vec<Dim, T>, Vec<Dim, T>) -> Box<Dim, T>;
+AABB(Vec<Dim, T>, Vec<Dim, T>) -> AABB<Dim, T>;
 
 template <std::size_t Dim, class T>
-Box(Vec<Dim, T>, T) -> Box<Dim, T>;
+AABB(Vec<Dim, T>, T) -> AABB<Dim, T>;
 
 /*!
- * @brief Compare two Boxs.
+ * @brief Compare two AABBs.
  *
- * @param lhs,rhs The Boxs to compare
+ * @param lhs,rhs The AABBs to compare
  * @return `true` if they compare equal, `false` otherwise.
  */
 template <std::size_t Dim, class T>
-bool operator==(Box<Dim, T> const& lhs, Box<Dim, T> const& rhs)
+bool operator==(AABB<Dim, T> const& lhs, AABB<Dim, T> const& rhs)
 {
 	return lhs.min == rhs.min && lhs.min == rhs.min;
 }
 
 /*!
- * @brief Compare two Boxs.
+ * @brief Compare two AABBs.
  *
- * @param lhs,rhs The Boxs to compare
+ * @param lhs,rhs The AABBs to compare
  * @return `true` if they do not compare equal, `false` otherwise.
  */
 template <std::size_t Dim, class T>
-bool operator!=(Box<Dim, T> const& lhs, Box<Dim, T> const& rhs)
+bool operator!=(AABB<Dim, T> const& lhs, AABB<Dim, T> const& rhs)
 {
 	return !(lhs == rhs);
 }
 
 template <std::size_t Dim, class T>
-std::ostream& operator<<(std::ostream& out, Box<Dim, T> const& box)
+std::ostream& operator<<(std::ostream& out, AABB<Dim, T> const& aabb)
 {
-	return out << "Min: " << box.min << ", Max: " << box.max;
+	return out << "Min: " << aabb.min << ", Max: " << aabb.max;
 }
 
 template <class T>
-using Box1 = Box<1, T>;
+using AABB1 = AABB<1, T>;
 template <class T>
-using Box2 = Box<2, T>;
+using AABB2 = AABB<2, T>;
 template <class T>
-using Box3 = Box<3, T>;
+using AABB3 = AABB<3, T>;
 template <class T>
-using Box4 = Box<4, T>;
+using AABB4 = AABB<4, T>;
 
-using Box1f = Box<1, float>;
-using Box2f = Box<2, float>;
-using Box3f = Box<3, float>;
-using Box4f = Box<4, float>;
+using AABB1f = AABB<1, float>;
+using AABB2f = AABB<2, float>;
+using AABB3f = AABB<3, float>;
+using AABB4f = AABB<4, float>;
 
-using Box1d = Box<1, double>;
-using Box2d = Box<2, double>;
-using Box3d = Box<3, double>;
-using Box4d = Box<4, double>;
+using AABB1d = AABB<1, double>;
+using AABB2d = AABB<2, double>;
+using AABB3d = AABB<3, double>;
+using AABB4d = AABB<4, double>;
 }  // namespace ufo
 
-#endif  // UFO_GEOMETRY_BOX_HPP
+#endif  // UFO_GEOMETRY_AABB_HPP

@@ -158,11 +158,11 @@ class DynamicGeometry
 	}
 
 	template <class Geometry>
-	[[nodiscard]] constexpr float distance(Geometry const& geometry) const
+	[[nodiscard]] constexpr double distance(Geometry const& geometry) const
 	{
 		// TODO: Should this also be able to return double?
 		// TODO: Implement
-		return 0.0f;
+		return 0.0;
 	}
 
 	[[nodiscard]] bool hasGeometry() const { return !!geometry_; }

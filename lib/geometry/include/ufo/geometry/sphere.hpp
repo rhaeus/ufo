@@ -82,6 +82,13 @@ struct Sphere {
 	}
 };
 
+//
+// Deduction guide
+//
+
+template <std::size_t Dim, class T>
+Sphere(Vec<Dim, T>, T) -> Sphere<Dim, T>;
+
 /*!
  * @brief Compare two Spheres.
  *
@@ -111,13 +118,6 @@ std::ostream& operator<<(std::ostream& out, Sphere<Dim, T> const& sphere)
 {
 	return out << "Center: " << sphere.center << ", Radius: " << sphere.radius;
 }
-
-//
-// Deduction guide
-//
-
-template <std::size_t Dim, class T>
-Sphere(Vec<Dim, T>, T) -> Sphere<Dim, T>;
 
 template <class T>
 using Sphere1 = Sphere<1, T>;

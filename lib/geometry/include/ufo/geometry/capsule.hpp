@@ -77,6 +77,13 @@ struct Capsule {
 	}
 };
 
+//
+// Deduction guide
+//
+
+template <std::size_t Dim, class T>
+Capsule(Vec<Dim, T>, Vec<Dim, T>, T) -> Capsule<Dim, T>;
+
 /*!
  * @brief Compare two Capsules.
  *
@@ -107,13 +114,6 @@ std::ostream& operator<<(std::ostream& out, Capsule<Dim, T> const& capsule)
 	return out << "Start: " << capsule.start << ", End: " << capsule.end
 	           << ", Radius: " << capsule.radius;
 }
-
-//
-// Deduction guide
-//
-
-template <std::size_t Dim, class T>
-Capsule(Vec<Dim, T>, Vec<Dim, T>, T) -> Capsule<Dim, T>;
 
 template <class T>
 using Capsule2 = Capsule<2, T>;

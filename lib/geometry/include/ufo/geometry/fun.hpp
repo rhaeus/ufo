@@ -70,60 +70,50 @@ namespace ufo
 **************************************************************************************/
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr Vec<Dim, T> min(AABB<Dim, T> a)
+[[nodiscard]] constexpr Vec<Dim, T> min(AABB<Dim, T> const& a)
 {
 	return a.min;
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr Vec<Dim, T> min(BS<Dim, T> a)
+[[nodiscard]] constexpr Vec<Dim, T> min(BS<Dim, T> const& a)
 {
 	return a.center - a.radius;
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr Vec<Dim, T> min(Capsule<Dim, T> a)
+[[nodiscard]] constexpr Vec<Dim, T> min(Capsule<Dim, T> const& a)
 {
 	return min(a.start, a.end) - a.radius;
 }
 
 template <class T>
-[[nodiscard]] constexpr Vec<3, T> min(Frustum<T> a)
+[[nodiscard]] constexpr Vec<3, T> min(Frustum<T> const& a)
 {
 	// TODO: Implement
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr Vec<Dim, T> min(LineSegment<Dim, T> a)
+[[nodiscard]] constexpr Vec<Dim, T> min(LineSegment<Dim, T> const& a)
 {
-	Vec<Dim, T> res;
-	for (std::size_t i{}; Dim > i; ++i) {
-		res[i] = std::min(a.start[i], a.end[i]);
-	}
-	return res;
+	return min(a.start, a.end);
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr Vec<Dim, T> min(OBB<Dim, T> a)
+[[nodiscard]] constexpr Vec<Dim, T> min(OBB<Dim, T> const& a)
 {
 	// TODO: Implement correct
-	Vec<Dim, T> rot_half_length = a.rotation * a.half_length;
-
-	Vec<Dim, T> res;
-	for (std::size_t i{}; Dim > i; ++i) {
-		res[i] = a.center[i] - std::abs(rot_half_length[i]);
-	}
-	return res;
+	return a.center - abs(a.rotatedHalfLength());
 }
 
 template <class T>
-[[nodiscard]] constexpr Vec<3, T> min(Plane<T> a)
+[[nodiscard]] constexpr Vec<3, T> min(Plane<T> const& a)
 {
 	// TODO: Implement
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr Vec<Dim, T> min(Ray<Dim, T> a)
+[[nodiscard]] constexpr Vec<Dim, T> min(Ray<Dim, T> const& a)
 {
 	Vec<Dim, T> res;
 	for (std::size_t i{}; Dim > i; ++i) {
@@ -137,7 +127,7 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr Vec<Dim, T> min(Triangle<Dim, T> a)
+[[nodiscard]] constexpr Vec<Dim, T> min(Triangle<Dim, T> const& a)
 {
 	return min(a[0], min(a[1], a[2]));
 }
@@ -149,60 +139,50 @@ template <std::size_t Dim, class T>
 **************************************************************************************/
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr Vec<Dim, T> max(AABB<Dim, T> a)
+[[nodiscard]] constexpr Vec<Dim, T> max(AABB<Dim, T> const& a)
 {
 	return a.max;
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr Vec<Dim, T> max(BS<Dim, T> a)
+[[nodiscard]] constexpr Vec<Dim, T> max(BS<Dim, T> const& a)
 {
 	return a.center + a.radius;
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr Vec<Dim, T> max(Capsule<Dim, T> a)
+[[nodiscard]] constexpr Vec<Dim, T> max(Capsule<Dim, T> const& a)
 {
 	return max(a.start, a.end) + a.radius;
 }
 
 template <class T>
-[[nodiscard]] constexpr Vec<3, T> max(Frustum<T> a)
+[[nodiscard]] constexpr Vec<3, T> max(Frustum<T> const& a)
 {
 	// TODO: Implement
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr Vec<Dim, T> max(LineSegment<Dim, T> a)
+[[nodiscard]] constexpr Vec<Dim, T> max(LineSegment<Dim, T> const& a)
 {
-	Vec<Dim, T> res;
-	for (std::size_t i{}; Dim > i; ++i) {
-		res[i] = std::max(a.start[i], a.end[i]);
-	}
-	return res;
+	return max(a.start, a.end);
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr Vec<Dim, T> max(OBB<Dim, T> a)
+[[nodiscard]] constexpr Vec<Dim, T> max(OBB<Dim, T> const& a)
 {
 	// TODO: Implement correct
-	Vec<Dim, T> rot_half_length = a.rotation * a.half_length;
-
-	Vec<Dim, T> res;
-	for (std::size_t i{}; Dim > i; ++i) {
-		res[i] = a.center[i] + std::abs(rot_half_length[i]);
-	}
-	return res;
+	return a.center + abs(a.rotatedHalfLength());
 }
 
 template <class T>
-[[nodiscard]] constexpr Vec<3, T> max(Plane<T> a)
+[[nodiscard]] constexpr Vec<3, T> max(Plane<T> const& a)
 {
 	// TODO: Implement
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr Vec<Dim, T> max(Ray<Dim, T> a)
+[[nodiscard]] constexpr Vec<Dim, T> max(Ray<Dim, T> const& a)
 {
 	Vec<Dim, T> res;
 	for (std::size_t i{}; Dim > i; ++i) {
@@ -216,7 +196,7 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr Vec<Dim, T> max(Triangle<Dim, T> a)
+[[nodiscard]] constexpr Vec<Dim, T> max(Triangle<Dim, T> const& a)
 {
 	return max(a[0], max(a[1], a[2]));
 }
@@ -277,8 +257,8 @@ template <std::size_t Dim, class T>
 	}
 }
 
-template <class T>
-[[nodiscard]] constexpr std::array<Vec<3, T>, 8> corners(Frustum<T> const& a)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr std::array<Vec<Dim, T>, ipow(2, Dim)> corners(Frustum<T> const& a)
 {
 	// TODO: Implement
 }

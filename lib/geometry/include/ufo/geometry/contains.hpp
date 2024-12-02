@@ -98,7 +98,7 @@ template <class A>
 // [[nodiscard]] constexpr bool contains(AIt first, AIt last, B const& b)
 // {
 // 	// TODO: What should this be?
-// 	return std::all_of(first, last, [&b](auto const& a) { return contains(a, b); });
+// 	return std::any_of(first, last, [&b](auto const& a) { return contains(a, b); });
 // }
 
 // template <class A, class BIt>
@@ -112,7 +112,7 @@ template <class A>
 // [[nodiscard]] constexpr bool contains(AIt a_first, AIt a_last, BIt b_first, BIt b_last)
 // {
 // 	// TODO: What should this be?
-// 	return std::all_of(a_first, a_last, [&b_first, &b_last](auto const& a) {
+// 	return std::any_of(a_first, a_last, [&b_first, &b_last](auto const& a) {
 // 		return contains(a, b_first, b_last);
 // 	});
 // }

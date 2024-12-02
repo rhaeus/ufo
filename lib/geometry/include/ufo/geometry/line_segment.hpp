@@ -77,6 +77,13 @@ struct LineSegment {
 	}
 };
 
+//
+// Deduction guide
+//
+
+template <std::size_t Dim, class T>
+LineSegment(LineSegment<Dim, T>, LineSegment<Dim, T>) -> LineSegment<Dim, T>;
+
 /*!
  * @brief Compare two LineSegments.
  *
@@ -106,13 +113,6 @@ std::ostream& operator<<(std::ostream& out, LineSegment<Dim, T> const& ls)
 {
 	return out << "Start: " << ls.start << ", End: " << ls.end;
 }
-
-//
-// Deduction guide
-//
-
-template <std::size_t Dim, class T>
-LineSegment(LineSegment<Dim, T>, LineSegment<Dim, T>) -> LineSegment<Dim, T>;
 
 template <class T>
 using LineSegment1 = LineSegment<1, T>;

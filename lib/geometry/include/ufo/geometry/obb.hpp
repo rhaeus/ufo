@@ -39,8 +39,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef UFO_GEOMETRY_ORIENTED_BOX_HPP
-#define UFO_GEOMETRY_ORIENTED_BOX_HPP
+#ifndef UFO_GEOMETRY_OBB_HPP
+#define UFO_GEOMETRY_OBB_HPP
 
 // UFO
 #include <ufo/math/mat.hpp>
@@ -56,10 +56,10 @@
 namespace ufo
 {
 template <std::size_t Dim = 3, class T = float>
-struct OrientedBox;
+struct OBB;
 
 template <class T>
-struct OrientedBox<2, T> {
+struct OBB<2, T> {
 	static_assert(std::is_floating_point_v<T>, "T is required to be floating point.");
 
 	using value_type = T;
@@ -68,10 +68,10 @@ struct OrientedBox<2, T> {
 	Vec<2, T>    half_length;
 	Mat<2, 2, T> rotation;
 
-	constexpr OrientedBox() noexcept = default;
+	constexpr OBB() noexcept = default;
 
-	constexpr OrientedBox(Vec<2, T> const& start, Vec<2, T> const& end,
-	                      Vec<1, T> const& half_length)
+	constexpr OBB(Vec<2, T> const& start, Vec<2, T> const& end,
+	              Vec<1, T> const& half_length)
 	    : center((start + end) * T(0.5))
 	{
 		auto dir = end - start;
@@ -88,40 +88,33 @@ struct OrientedBox<2, T> {
 		rotation[1][1] = cos_theta;
 	}
 
-	constexpr OrientedBox(Vec<2, T> const& start, Vec<2, T> const& end,
-	                      T const& half_length)
-	    : OrientedBox(start, end, Vec<1, T>(half_length))
+	constexpr OBB(Vec<2, T> const& start, Vec<2, T> const& end, T const& half_length)
+	    : OBB(start, end, Vec<1, T>(half_length))
 	{
 	}
 
-	constexpr OrientedBox(Vec<2, T> const& center, Vec<2, T> const& half_length) noexcept
+	constexpr OBB(Vec<2, T> const& center, Vec<2, T> const& half_length) noexcept
 	    : center(center), half_length(half_length)
 	{
 	}
 
-	constexpr OrientedBox(Vec<2, T> const& center, Vec<2, T> const& half_length,
-	                      Mat<2, 2, T> const& rotation) noexcept
+	constexpr OBB(Vec<2, T> const& center, Vec<2, T> const& half_length,
+	              Mat<2, 2, T> const& rotation) noexcept
 	    : center(center), half_length(half_length), rotation(rotation)
 	{
 	}
 
-	constexpr OrientedBox(Vec<2, T> const& center, Vec<2, T> const& half_length,
-	                      T const& rotation) noexcept
-	    : center(center), half_length(half_length), rotation(rotation)
-	{
-	}
-
-	constexpr OrientedBox(OrientedBox const&) noexcept = default;
+	constexpr OBB(OBB const&) noexcept = default;
 
 	template <class U>
-	constexpr explicit OrientedBox(OrientedBox<2, U> const& other) noexcept
+	constexpr explicit OBB(OBB<2, U> const& other) noexcept
 	    : center(other.center), half_length(other.half_length), rotation(other.rotation)
 	{
 	}
 
 	[[nodiscard]] constexpr Vec<2, T> rotatedHalfLength() const
 	{
-		return rotation * half_length;
+		return half_length * rotation;
 	}
 
 	void setRotation(T angle)
@@ -137,7 +130,7 @@ struct OrientedBox<2, T> {
 };
 
 template <class T>
-struct OrientedBox<3, T> {
+struct OBB<3, T> {
 	static_assert(std::is_floating_point_v<T>, "T is required to be floating point.");
 
 	using value_type = T;
@@ -146,11 +139,11 @@ struct OrientedBox<3, T> {
 	Vec<3, T>    half_length;
 	Mat<3, 3, T> rotation;
 
-	constexpr OrientedBox() noexcept = default;
+	constexpr OBB() noexcept = default;
 
-	constexpr OrientedBox(Vec<3, T> const& start, Vec<3, T> const& end,
-	                      Vec<2, T> const& half_length,
-	                      Vec<3, T> const& up = Vec<3, T>(T(0), T(0), T(1)))
+	constexpr OBB(Vec<3, T> const& start, Vec<3, T> const& end,
+	              Vec<2, T> const& half_length,
+	              Vec<3, T> const& up = Vec<3, T>(T(0), T(0), T(1)))
 	    : center((start + end) * T(0.5))
 	{
 		auto dir = end - start;
@@ -174,39 +167,41 @@ struct OrientedBox<3, T> {
 		rotation[2][2] = -f.z;
 	}
 
-	constexpr OrientedBox(Vec<3, T> const& center, Vec<3, T> const& half_length) noexcept
+	constexpr OBB(Vec<3, T> const& center, Vec<3, T> const& half_length) noexcept
 	    : center(center), half_length(half_length)
 	{
 	}
 
-	constexpr OrientedBox(Vec<3, T> const& center, Vec<3, T> const& half_length,
-	                      Mat<3, 3, T> const& rotation) noexcept
+	constexpr OBB(Vec<3, T> const& center, Vec<3, T> const& half_length,
+	              Mat<3, 3, T> const& rotation) noexcept
 	    : center(center), half_length(half_length), rotation(rotation)
 	{
 	}
 
-	constexpr OrientedBox(Vec<3, T> const& center, Vec<3, T> const& half_length,
-	                      Quat<T> const& rotation) noexcept
+	constexpr OBB(Vec<3, T> const& center, Vec<3, T> const& half_length,
+	              Quat<T> const& rotation) noexcept
 	    : center(center), half_length(half_length), rotation(rotation)
 	{
 	}
 
-	constexpr OrientedBox(OrientedBox const&) noexcept = default;
+	constexpr OBB(OBB const&) noexcept = default;
 
 	template <class U>
-	constexpr explicit OrientedBox(OrientedBox<3, U> const& other) noexcept
+	constexpr explicit OBB(OBB<3, U> const& other) noexcept
 	    : center(other.center), half_length(other.half_length), rotation(other.rotation)
 	{
 	}
 
 	[[nodiscard]] constexpr Vec<3, T> rotatedHalfLength() const
 	{
-		return rotation * half_length;
+		return half_length * rotation;
 	}
+
+	void setRotation(Quat<T> const& rotation) { this->rotation = rotation; }
 };
 
 template <class T>
-struct OrientedBox<4, T> {
+struct OBB<4, T> {
 	static_assert(std::is_floating_point_v<T>, "T is required to be floating point.");
 
 	using value_type = T;
@@ -215,10 +210,10 @@ struct OrientedBox<4, T> {
 	Vec<4, T>    half_length;
 	Mat<4, 4, T> rotation;
 
-	constexpr OrientedBox() noexcept = default;
+	constexpr OBB() noexcept = default;
 
-	constexpr OrientedBox(Vec<4, T> const& start, Vec<4, T> const& end,
-	                      Vec<3, T> const& half_length)
+	constexpr OBB(Vec<4, T> const& start, Vec<4, T> const& end,
+	              Vec<3, T> const& half_length)
 	{
 		auto dir = end - start;
 
@@ -228,85 +223,84 @@ struct OrientedBox<4, T> {
 		// TODO: Implement
 	}
 
-	constexpr OrientedBox(Vec<4, T> const& center, Vec<4, T> const& half_length) noexcept
+	constexpr OBB(Vec<4, T> const& center, Vec<4, T> const& half_length) noexcept
 	    : center(center), half_length(half_length)
 	{
 	}
 
-	constexpr OrientedBox(Vec<4, T> const& center, Vec<4, T> const& half_length,
-	                      Mat<4, 4, T> const& rotation) noexcept
+	constexpr OBB(Vec<4, T> const& center, Vec<4, T> const& half_length,
+	              Mat<4, 4, T> const& rotation) noexcept
 	    : center(center), half_length(half_length), rotation(rotation)
 	{
 	}
 
-	constexpr OrientedBox(OrientedBox const&) noexcept = default;
+	constexpr OBB(OBB const&) noexcept = default;
 
 	template <class U>
-	constexpr explicit OrientedBox(OrientedBox<4, U> const& other) noexcept
+	constexpr explicit OBB(OBB<4, U> const& other) noexcept
 	    : center(other.center), half_length(other.half_length), rotation(other.rotation)
 	{
 	}
 
 	[[nodiscard]] constexpr Vec<4, T> rotatedHalfLength() const
 	{
-		return rotation * half_length;
+		return half_length * rotation;
 	}
 };
-
-/*!
- * @brief Compare two OrientedBoxs.
- *
- * @param lhs,rhs The OrientedBoxs to compare
- * @return `true` if they compare equal, `false` otherwise.
- */
-template <std::size_t Dim, class T>
-bool operator==(OrientedBox<Dim, T> const& lhs, OrientedBox<Dim, T> const& rhs)
-{
-	return lhs.center == rhs.center && lhs.half_length == rhs.half_length &&
-	       lhs.rotation == rhs.rotation;
-}
-
-/*!
- * @brief Compare two OrientedBoxs.
- *
- * @param lhs,rhs The OrientedBoxs to compare
- * @return `true` if they do not compare equal, `false` otherwise.
- */
-template <std::size_t Dim, class T>
-bool operator!=(OrientedBox<Dim, T> const& lhs, OrientedBox<Dim, T> const& rhs)
-{
-	return !(lhs == rhs);
-}
-
-template <std::size_t Dim, class T>
-std::ostream& operator<<(std::ostream& out, OrientedBox<Dim, T> const& oriented_box)
-{
-	return out << "Center: " << oriented_box.center
-	           << ", Half length: " << oriented_box.half_length
-	           << ", Rotation: " << oriented_box.rotation;
-}
 
 //
 // Deduction guide
 //
 
 // template <std::size_t Dim, class T>
-// OrientedBox(Vec<Dim, T>, T) -> OrientedBox<Dim, T>;
+// OBB(Vec<Dim, T>, T) -> OBB<Dim, T>;
+
+/*!
+ * @brief Compare two OBBs.
+ *
+ * @param lhs,rhs The OBBs to compare
+ * @return `true` if they compare equal, `false` otherwise.
+ */
+template <std::size_t Dim, class T>
+bool operator==(OBB<Dim, T> const& lhs, OBB<Dim, T> const& rhs)
+{
+	return lhs.center == rhs.center && lhs.half_length == rhs.half_length &&
+	       lhs.rotation == rhs.rotation;
+}
+
+/*!
+ * @brief Compare two OBBs.
+ *
+ * @param lhs,rhs The OBBs to compare
+ * @return `true` if they do not compare equal, `false` otherwise.
+ */
+template <std::size_t Dim, class T>
+bool operator!=(OBB<Dim, T> const& lhs, OBB<Dim, T> const& rhs)
+{
+	return !(lhs == rhs);
+}
+
+template <std::size_t Dim, class T>
+std::ostream& operator<<(std::ostream& out, OBB<Dim, T> const& obb)
+{
+	return out << "Center: " << obb.center << ", Half length: " << obb.half_length
+	           << ", Rotation: " << obb.rotation;
+}
 
 template <class T>
-using OrientedBox2 = OrientedBox<2, T>;
+using OBB2 = OBB<2, T>;
 template <class T>
-using OrientedBox3 = OrientedBox<3, T>;
+using OBB3 = OBB<3, T>;
 template <class T>
-using OrientedBox4 = OrientedBox<4, T>;
+using OBB4 = OBB<4, T>;
 
-using OrientedBox2f = OrientedBox<2, float>;
-using OrientedBox3f = OrientedBox<3, float>;
-using OrientedBox4f = OrientedBox<4, float>;
+using OBB2f = OBB<2, float>;
+using OBB3f = OBB<3, float>;
+using OBB4f = OBB<4, float>;
 
-using OrientedBox2d = OrientedBox<2, double>;
-using OrientedBox3d = OrientedBox<3, double>;
-using OrientedBox4d = OrientedBox<4, double>;
+using OBB2d = OBB<2, double>;
+using OBB3d = OBB<3, double>;
+using OBB4d = OBB<4, double>;
 }  // namespace ufo
 
-#endif  // UFO_GEOMETRY_ORIENTED_BOX_HPP
+#endif  // UFO_GEOMETRY_OBB_HPP
