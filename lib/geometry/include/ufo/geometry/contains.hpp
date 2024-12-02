@@ -43,6 +43,7 @@
 #define UFO_GEOMETRY_CONTAINS_HPP
 
 // UFO
+#include <ufo/geometry/dynamic_geometry.hpp>
 #include <ufo/geometry/shape/aabb.hpp>
 #include <ufo/geometry/shape/bs.hpp>
 #include <ufo/geometry/shape/capsule.hpp>
@@ -59,6 +60,87 @@
 
 namespace ufo
 {
+/**************************************************************************************
+|                                                                                     |
+|                                  Dynamic Geometry                                   |
+|                                                                                     |
+**************************************************************************************/
+
+template <class B>
+[[nodiscard]] constexpr bool contains(DynamicGeometry const& a, B const& b)
+{
+	// TODO: What should this be?
+	return a.contains(b);
+}
+
+template <class A>
+[[nodiscard]] constexpr bool contains(A const& a, DynamicGeometry const& b)
+{
+	// TODO: What should this be?
+	return b.inside(a);
+}
+
+[[nodiscard]] constexpr bool contains(DynamicGeometry const& a, DynamicGeometry const& b)
+{
+	// TODO: What should this be?
+	return a.contains(b);
+}
+
+/**************************************************************************************
+|                                                                                     |
+|                                   Iterators/range                                   |
+|                                                                                     |
+**************************************************************************************/
+
+// TODO: Implement
+
+// template <class AIt, class B>
+// [[nodiscard]] constexpr bool contains(AIt first, AIt last, B const& b)
+// {
+// 	// TODO: What should this be?
+// 	return std::all_of(first, last, [&b](auto const& a) { return contains(a, b); });
+// }
+
+// template <class A, class BIt>
+// [[nodiscard]] constexpr bool contains(A const& a, BIt first, BIt last)
+// {
+// 	// TODO: What should this be?
+// 	return std::all_of(first, last, [&a](auto const& b) { return contains(a, b); });
+// }
+
+// template <class AIt, class BIt>
+// [[nodiscard]] constexpr bool contains(AIt a_first, AIt a_last, BIt b_first, BIt b_last)
+// {
+// 	// TODO: What should this be?
+// 	return std::all_of(a_first, a_last, [&b_first, &b_last](auto const& a) {
+// 		return contains(a, b_first, b_last);
+// 	});
+// }
+
+// template <class RangeA, class B>
+// [[nodiscard]] constexpr bool contains(RangeA const& a, B const& b)
+// {
+// 	using std::begin;
+// 	using std::end;
+// 	return contains(begin(a), end(a), b);
+// }
+
+// template <class A, class RangeB>
+// [[nodiscard]] constexpr bool contains(A const& a, RangeB const& b)
+// {
+// 	using std::begin;
+// 	using std::end;
+// 	return contains(a, begin(b), end(b));
+// }
+
+// template <class RangeA, class RangeB>
+// [[nodiscard]] constexpr bool contains(RangeA const& a, RangeB const& b)
+// {
+// 	using std::begin;
+// 	using std::end;
+// 	return contains(begin(a), end(a), begin(b), end(b));
+// }
+
 /**************************************************************************************
 |                                                                                     |
 |                                        AABB                                         |

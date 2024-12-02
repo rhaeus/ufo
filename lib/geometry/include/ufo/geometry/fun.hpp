@@ -106,6 +106,7 @@ template <std::size_t Dim, class T>
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr Vec<Dim, T> min(OBB<Dim, T> a)
 {
+	// TODO: Implement correct
 	Vec<Dim, T> rot_half_length = a.rotation * a.half_length;
 
 	Vec<Dim, T> res;
@@ -184,6 +185,7 @@ template <std::size_t Dim, class T>
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr Vec<Dim, T> max(OBB<Dim, T> a)
 {
+	// TODO: Implement correct
 	Vec<Dim, T> rot_half_length = a.rotation * a.half_length;
 
 	Vec<Dim, T> res;

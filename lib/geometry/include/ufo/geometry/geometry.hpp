@@ -43,9 +43,12 @@
 #define UFO_GEOMETRY_HPP
 
 // UFO
-#include <ufo/geometry/bounding_volume.hpp>
+#include <ufo/geometry/closest_point.hpp>
 #include <ufo/geometry/contains.hpp>
-#include <ufo/geometry/intersects.hpp>
+#include <ufo/geometry/disjoint.hpp>
 #include <ufo/geometry/distance.hpp>
+#include <ufo/geometry/fun.hpp>
+#include <ufo/geometry/inside.hpp>
+#include <ufo/geometry/intersects.hpp>
 
 #endif  // UFO_GEOMETRY_HPP
