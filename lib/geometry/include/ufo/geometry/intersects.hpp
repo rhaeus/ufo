@@ -70,7 +70,7 @@ namespace ufo
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool intersects(AABB<Dim, T> const& a, AABB<Dim, T> const& b)
 {
-	return all(min(a) <= max(b) && min(b) <= max(a));
+	return all(lessThanEqual(min(a), max(b)) && lessThanEqual(min(b), max(a)));
 }
 
 template <std::size_t Dim, class T>
