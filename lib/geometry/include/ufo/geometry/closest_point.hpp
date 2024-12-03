@@ -46,7 +46,6 @@
 #include <ufo/geometry/shape/aabb.hpp>
 #include <ufo/geometry/shape/bs.hpp>
 #include <ufo/geometry/shape/capsule.hpp>
-#include <ufo/geometry/shape/frustum.hpp>
 #include <ufo/geometry/shape/line_segment.hpp>
 #include <ufo/geometry/shape/obb.hpp>
 #include <ufo/geometry/shape/plane.hpp>

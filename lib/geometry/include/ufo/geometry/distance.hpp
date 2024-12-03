@@ -43,9 +43,10 @@
 #define UFO_GEOMETRY_DISTANCE_HPP
 
 // UFO
+#include <ufo/geometry/frustum.hpp>
+#include <ufo/geometry/line.hpp>
 #include <ufo/geometry/shape/aabb.hpp>
 #include <ufo/geometry/shape/bs.hpp>
-#include <ufo/geometry/shape/frustum.hpp>
 #include <ufo/geometry/shape/line_segment.hpp>
 #include <ufo/geometry/shape/obb.hpp>
 #include <ufo/geometry/shape/plane.hpp>
@@ -106,13 +107,13 @@ template <std::size_t Dim, class T>
 }
 
 // template <class T>
-// [[nodiscard]] constexpr T distanceSquared(AABB<3, T> const& a, Frustum<T> const& b)
+// [[nodiscard]] constexpr T distanceSquared(AABB<3, T> const& a, Frustum<3, T> const& b)
 // {
 // 	// TODO: Implement
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr T distance(AABB<3, T> const& a, Frustum<T> const& b)
+// [[nodiscard]] constexpr T distance(AABB<3, T> const& a, Frustum<3, T> const& b)
 // {
 // 	// TODO: Implement
 // }
@@ -223,13 +224,13 @@ template <std::size_t Dim, class T>
 }
 
 // template <class T>
-// [[nodiscard]] constexpr T distanceSquared(BS<3, T> const& a, Frustum<T> const& b)
+// [[nodiscard]] constexpr T distanceSquared(BS<3, T> const& a, Frustum<3, T> const& b)
 // {
 // 	// TODO: Implement
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr T distance(BS<3, T> const& a, Frustum<T> const& b)
+// [[nodiscard]] constexpr T distance(BS<3, T> const& a, Frustum<3, T> const& b)
 // {
 // 	// TODO: Implement
 // }
@@ -315,114 +316,135 @@ template <std::size_t Dim, class T>
 |                                                                                     |
 **************************************************************************************/
 
-template <class T>
-[[nodiscard]] constexpr T distanceSquared(Frustum<T> const& a, AABB<3, T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr T distanceSquared(Frustum<Dim, T> const& a, AABB<Dim, T> const& b)
 {
 	return distanceSquared(b, a);
 }
 
-template <class T>
-[[nodiscard]] constexpr T distance(Frustum<T> const& a, AABB<3, T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr T distance(Frustum<Dim, T> const& a, AABB<Dim, T> const& b)
 {
 	return distance(b, a);
 }
 
-template <class T>
-[[nodiscard]] constexpr T distanceSquared(Frustum<T> const& a, BS<3, T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr T distanceSquared(Frustum<Dim, T> const& a, BS<Dim, T> const& b)
 {
 	return distanceSquared(b, a);
 }
 
-template <class T>
-[[nodiscard]] constexpr T distance(Frustum<T> const& a, BS<3, T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr T distance(Frustum<Dim, T> const& a, BS<Dim, T> const& b)
 {
 	return distance(b, a);
 }
 
 // template <class T>
-// [[nodiscard]] constexpr T distanceSquared(Frustum<T> const& a, Frustum<T> const& b)
-// {
-// 	// TODO: Implement
-// }
-
-// template <class T>
-// [[nodiscard]] constexpr T distance(Frustum<T> const& a, Frustum<T> const& b)
-// {
-// 	// TODO: Implement
-// }
-
-// template <class T>
-// [[nodiscard]] constexpr T distanceSquared(Frustum<T> const& a, LineSegment<3, T> const&
+// [[nodiscard]] constexpr T distanceSquared(Frustum<3, T> const& a, Frustum<3, T> const&
 // b)
 // {
 // 	// TODO: Implement
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr T distance(Frustum<T> const& a, LineSegment<3, T> const& b)
+// [[nodiscard]] constexpr T distance(Frustum<3, T> const& a, Frustum<3, T> const& b)
 // {
 // 	// TODO: Implement
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr T distanceSquared(Frustum<T> const& a, OBB<3, T> const& b)
+// [[nodiscard]] constexpr T distanceSquared(Frustum<3, T> const& a, LineSegment<3, T>
+// const& b)
 // {
 // 	// TODO: Implement
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr T distance(Frustum<T> const& a, OBB<3, T> const& b)
+// [[nodiscard]] constexpr T distance(Frustum<3, T> const& a, LineSegment<3, T> const& b)
 // {
 // 	// TODO: Implement
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr T distanceSquared(Frustum<T> const& a, Plane<T> const& b)
+// [[nodiscard]] constexpr T distanceSquared(Frustum<3, T> const& a, OBB<3, T> const& b)
 // {
 // 	// TODO: Implement
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr T distance(Frustum<T> const& a, Plane<T> const& b)
+// [[nodiscard]] constexpr T distance(Frustum<3, T> const& a, OBB<3, T> const& b)
 // {
 // 	// TODO: Implement
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr T distanceSquared(Frustum<T> const& a, Ray<3, T> const& b)
+// [[nodiscard]] constexpr T distanceSquared(Frustum<3, T> const& a, Plane<T> const& b)
 // {
 // 	// TODO: Implement
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr T distance(Frustum<T> const& a, Ray<3, T> const& b)
+// [[nodiscard]] constexpr T distance(Frustum<3, T> const& a, Plane<T> const& b)
 // {
 // 	// TODO: Implement
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr T distanceSquared(Frustum<T> const& a, Triangle<3, T> const& b)
+// [[nodiscard]] constexpr T distanceSquared(Frustum<3, T> const& a, Ray<3, T> const& b)
 // {
 // 	// TODO: Implement
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr T distance(Frustum<T> const& a, Triangle<3, T> const& b)
+// [[nodiscard]] constexpr T distance(Frustum<3, T> const& a, Ray<3, T> const& b)
 // {
 // 	// TODO: Implement
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr T distanceSquared(Frustum<T> const& a, Vec<3, T> const& b)
+// [[nodiscard]] constexpr T distanceSquared(Frustum<3, T> const& a, Triangle<3, T> const&
+// b)
 // {
 // 	// TODO: Implement
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr T distance(Frustum<T> const& a, Vec<3, T> const& b)
+// [[nodiscard]] constexpr T distance(Frustum<3, T> const& a, Triangle<3, T> const& b)
 // {
 // 	// TODO: Implement
 // }
+
+// template <class T>
+// [[nodiscard]] constexpr T distanceSquared(Frustum<3, T> const& a, Vec<3, T> const& b)
+// {
+// 	// TODO: Implement
+// }
+
+// template <class T>
+// [[nodiscard]] constexpr T distance(Frustum<3, T> const& a, Vec<3, T> const& b)
+// {
+// 	// TODO: Implement
+// }
+
+/**************************************************************************************
+|                                                                                     |
+|                                        Line                                         |
+|                                                                                     |
+**************************************************************************************/
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr T distanceSquared(Line<Dim, T> const& a, Vec<Dim, T> const& b)
+{
+	auto d = distance(a, b);
+	return d * d;
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr T distance(Line<Dim, T> const& a, Vec<Dim, T> const& b)
+{
+	return std::abs(a.normal.x * b.x + a.normal.y * b.y - a.distance);
+}
 
 /**************************************************************************************
 |                                                                                     |
@@ -458,13 +480,13 @@ template <std::size_t Dim, class T>
 
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr T distanceSquared(LineSegment<Dim, T> const& a,
-                                          Frustum<T> const&          b)
+                                          Frustum<Dim, T> const&     b)
 {
 	return distance(b, a);
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr T distance(LineSegment<Dim, T> const& a, Frustum<T> const& b)
+[[nodiscard]] constexpr T distance(LineSegment<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
 	return distance(b, a);
 }
@@ -591,14 +613,14 @@ template <std::size_t Dim, class T>
 	return distance(b, a);
 }
 
-template <class T>
-[[nodiscard]] constexpr T distanceSquared(OBB<3, T> const& a, Frustum<T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr T distanceSquared(OBB<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
 	return distanceSquared(b, a);
 }
 
-template <class T>
-[[nodiscard]] constexpr T distance(OBB<3, T> const& a, Frustum<T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr T distance(OBB<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
 	return distance(b, a);
 }
@@ -708,13 +730,13 @@ template <class T>
 }
 
 template <class T>
-[[nodiscard]] constexpr T distanceSquared(Plane<T> const& a, Frustum<T> const& b)
+[[nodiscard]] constexpr T distanceSquared(Plane<T> const& a, Frustum<3, T> const& b)
 {
 	return distanceSquared(b, a);
 }
 
 template <class T>
-[[nodiscard]] constexpr T distance(Plane<T> const& a, Frustum<T> const& b)
+[[nodiscard]] constexpr T distance(Plane<T> const& a, Frustum<3, T> const& b)
 {
 	return distance(b, a);
 }
@@ -821,14 +843,14 @@ template <std::size_t Dim, class T>
 	return distance(b, a);
 }
 
-template <class T>
-[[nodiscard]] constexpr T distanceSquared(Ray<3, T> const& a, Frustum<T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr T distanceSquared(Ray<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
 	return distanceSquared(b, a);
 }
 
-template <class T>
-[[nodiscard]] constexpr T distance(Ray<3, T> const& a, Frustum<T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr T distance(Ray<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
 	return distance(b, a);
 }
@@ -938,14 +960,15 @@ template <std::size_t Dim, class T>
 	return distance(b, a);
 }
 
-template <class T>
-[[nodiscard]] constexpr T distanceSquared(Triangle<3, T> const& a, Frustum<T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr T distanceSquared(Triangle<Dim, T> const& a,
+                                          Frustum<Dim, T> const&  b)
 {
 	return distanceSquared(b, a);
 }
 
-template <class T>
-[[nodiscard]] constexpr T distance(Triangle<3, T> const& a, Frustum<T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr T distance(Triangle<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
 	return distance(b, a);
 }
@@ -1058,13 +1081,13 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr T distanceSquared(Vec<Dim, T> const& a, Frustum<T> const& b)
+[[nodiscard]] constexpr T distanceSquared(Vec<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
 	return distanceSquared(b, a);
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr T distance(Vec<Dim, T> const& a, Frustum<T> const& b)
+[[nodiscard]] constexpr T distance(Vec<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
 	return distance(b, a);
 }
@@ -1126,6 +1149,18 @@ template <std::size_t Dim, class T>
 
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr T distance(Vec<Dim, T> const& a, Triangle<Dim, T> const& b)
+{
+	return distance(b, a);
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr T distanceSquared(Vec<Dim, T> const& a, Line<Dim, T> const& b)
+{
+	return distanceSquared(b, a);
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr T distance(Vec<Dim, T> const& a, Line<Dim, T> const& b)
 {
 	return distance(b, a);
 }

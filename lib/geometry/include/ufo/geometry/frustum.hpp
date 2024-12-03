@@ -109,6 +109,16 @@ struct Frustum<2, T> {
 	}
 
 	[[nodiscard]] constexpr static std::size_t size() noexcept { return 2; }
+
+	[[nodiscard]] constexpr Line<2, T>& operator[](std::size_t pos) noexcept
+	{
+		return (&left)[pos];
+	}
+
+	[[nodiscard]] constexpr Line<2, T> const& operator[](std::size_t pos) const noexcept
+	{
+		return (&left)[pos];
+	}
 };
 
 //

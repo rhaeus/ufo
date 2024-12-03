@@ -45,10 +45,11 @@
 // UFO
 #include <ufo/geometry/closest_point.hpp>
 #include <ufo/geometry/detail/helper.hpp>
+#include <ufo/geometry/frustum.hpp>
+#include <ufo/geometry/line.hpp>
 #include <ufo/geometry/shape/aabb.hpp>
 #include <ufo/geometry/shape/bs.hpp>
 #include <ufo/geometry/shape/capsule.hpp>
-#include <ufo/geometry/shape/frustum.hpp>
 #include <ufo/geometry/shape/line_segment.hpp>
 #include <ufo/geometry/shape/obb.hpp>
 #include <ufo/geometry/shape/plane.hpp>
@@ -105,7 +106,7 @@ template <std::size_t Dim, class T>
 }
 
 // template <class T>
-// [[nodiscard]] constexpr bool intersects(AABB<3, T> const& a, Frustum<T> const& b)
+// [[nodiscard]] constexpr bool intersects(AABB<3, T> const& a, Frustum<3, T> const& b)
 // {
 // 	return 0 <= detail::classify(a, b.bottom) && 0 <= detail::classify(a, b.far) &&
 // 	       0 <= detail::classify(a, b.left) && 0 <= detail::classify(a, b.near) &&
@@ -345,10 +346,10 @@ template <std::size_t Dim, class T>
 // 	// TODO: Implement
 // }
 
-template <class T>
-[[nodiscard]] constexpr bool intersects(BS<3, T> const& a, Frustum<T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool intersects(BS<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
-	for (std::size_t i{}; 6 > i; ++i) {
+	for (std::size_t i{}; Dim * 2 > i; ++i) {
 		if (-a.radius > dot(a.center, b[i].normal) + b[i].distance) {
 			return false;
 		}
@@ -428,7 +429,7 @@ template <std::size_t Dim, class T>
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr bool intersects(Capsule<3, T> const& a, Frustum<T> const& b)
+// [[nodiscard]] constexpr bool intersects(Capsule<3, T> const& a, Frustum<3, T> const& b)
 // {
 // 	// TODO: Implement
 // }
@@ -477,39 +478,40 @@ template <std::size_t Dim, class T>
 |                                                                                     |
 **************************************************************************************/
 
-template <class T>
-[[nodiscard]] constexpr bool intersects(Frustum<T> const& a, AABB<3, T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool intersects(Frustum<Dim, T> const& a, AABB<Dim, T> const& b)
 {
 	return intersects(b, a);
 }
 
-template <class T>
-[[nodiscard]] constexpr bool intersects(Frustum<T> const& a, BS<3, T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool intersects(Frustum<Dim, T> const& a, BS<Dim, T> const& b)
 {
 	return intersects(b, a);
 }
 
-template <class T>
-[[nodiscard]] constexpr bool intersects(Frustum<T> const& a, Capsule<3, T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool intersects(Frustum<Dim, T> const& a,
+                                        Capsule<Dim, T> const& b)
 {
 	return intersects(b, a);
 }
 
 // template <class T>
-// [[nodiscard]] constexpr bool intersects(Frustum<T> const& a, Frustum<T> const& b)
+// [[nodiscard]] constexpr bool intersects(Frustum<3, T> const& a, Frustum<3, T> const& b)
 // {
 // 	// TODO: Implement
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr bool intersects(Frustum<T> const& a, LineSegment<3, T> const&
-// b)
+// [[nodiscard]] constexpr bool intersects(Frustum<3, T> const& a, LineSegment<3, T>
+// const& b)
 // {
 // 	// TODO: Implement
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr bool intersects(Frustum<T> const& a, OBB<3, T> const& b)
+// [[nodiscard]] constexpr bool intersects(Frustum<3, T> const& a, OBB<3, T> const& b)
 // {
 // 	// TODO: Implement
 
@@ -520,27 +522,28 @@ template <class T>
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr bool intersects(Frustum<T> const& a, Plane<T> const& b)
+// [[nodiscard]] constexpr bool intersects(Frustum<3, T> const& a, Plane<T> const& b)
 // {
 // 	// TODO: Implement
 // }
 
-template <class T>
-[[nodiscard]] constexpr bool intersects(Frustum<T> const& a, Ray<3, T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool intersects(Frustum<Dim, T> const& a, Ray<Dim, T> const& b)
 {
 	return false;
 }
 
 // template <class T>
-// [[nodiscard]] constexpr bool intersects(Frustum<T> const& a, Triangle<3, T> const& b)
+// [[nodiscard]] constexpr bool intersects(Frustum<3, T> const& a, Triangle<3, T> const&
+// b)
 // {
 // 	// TODO: Implement
 // }
 
-template <class T>
-[[nodiscard]] constexpr bool intersects(Frustum<T> const& a, Vec<3, T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool intersects(Frustum<Dim, T> const& a, Vec<Dim, T> const& b)
 {
-	for (std::size_t i{}; 6 > i; ++i) {
+	for (std::size_t i{}; Dim * 2 > i; ++i) {
 		if (0 > dot(b, a[i].normal) + a[i].distance) {
 			return false;
 		}
@@ -574,8 +577,9 @@ template <std::size_t Dim, class T>
 	return intersects(b, a);
 }
 
-template <class T>
-[[nodiscard]] constexpr bool intersects(LineSegment<3, T> const& a, Frustum<T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool intersects(LineSegment<Dim, T> const& a,
+                                        Frustum<Dim, T> const&     b)
 {
 	return intersects(b, a);
 }
@@ -704,6 +708,28 @@ template <std::size_t Dim, class T>
 
 /**************************************************************************************
 |                                                                                     |
+|                                         Line                                        |
+|                                                                                     |
+**************************************************************************************/
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool intersects(Line<Dim, T> const& a, Line<Dim, T> const& b)
+{
+	if constexpr (2 == Dim) {
+		// LOOKAT: What if they are parallel, then det is also 0
+		auto det = a.normal.x * b.normal.y - a.normal.y * b.normal.x;
+		return det != T(0);
+	} else if constexpr (3 == Dim) {
+		// TODO: Implement
+	} else if constexpr (4 == Dim) {
+		// TODO: Implement
+	} else {
+		// Error
+	}
+}
+
+/**************************************************************************************
+|                                                                                     |
 |                                         OBB                                         |
 |                                                                                     |
 **************************************************************************************/
@@ -726,8 +752,8 @@ template <std::size_t Dim, class T>
 	return intersects(b, a);
 }
 
-template <class T>
-[[nodiscard]] constexpr bool intersects(OBB<3, T> const& a, Frustum<T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool intersects(OBB<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
 	return intersects(b, a);
 }
@@ -890,7 +916,7 @@ template <class T>
 }
 
 template <class T>
-[[nodiscard]] constexpr bool intersects(Plane<T> const& a, Frustum<T> const& b)
+[[nodiscard]] constexpr bool intersects(Plane<T> const& a, Frustum<3, T> const& b)
 {
 	return intersects(b, a);
 }
@@ -965,8 +991,8 @@ template <std::size_t Dim, class T>
 	return intersects(b, a);
 }
 
-template <class T>
-[[nodiscard]] constexpr bool intersects(Ray<3, T> const& a, Frustum<T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool intersects(Ray<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
 	return intersects(b, a);
 }
@@ -1038,8 +1064,9 @@ template <std::size_t Dim, class T>
 	return intersects(b, a);
 }
 
-template <class T>
-[[nodiscard]] constexpr bool intersects(Triangle<3, T> const& a, Frustum<T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool intersects(Triangle<Dim, T> const& a,
+                                        Frustum<Dim, T> const&  b)
 {
 	return intersects(b, a);
 }
@@ -1107,8 +1134,8 @@ template <std::size_t Dim, class T>
 	return intersects(b, a);
 }
 
-template <class T>
-[[nodiscard]] constexpr bool intersects(Vec<3, T> const& a, Frustum<T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool intersects(Vec<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
 	return intersects(b, a);
 }

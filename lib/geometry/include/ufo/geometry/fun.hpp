@@ -43,10 +43,10 @@
 #define UFO_GEOMETRY_FUN_HPP
 
 // UFO
+#include <ufo/geometry/frustum.hpp>
 #include <ufo/geometry/shape/aabb.hpp>
 #include <ufo/geometry/shape/bs.hpp>
 #include <ufo/geometry/shape/capsule.hpp>
-#include <ufo/geometry/shape/frustum.hpp>
 #include <ufo/geometry/shape/line_segment.hpp>
 #include <ufo/geometry/shape/obb.hpp>
 #include <ufo/geometry/shape/plane.hpp>
@@ -87,10 +87,17 @@ template <std::size_t Dim, class T>
 	return min(a.start, a.end) - a.radius;
 }
 
-template <class T>
-[[nodiscard]] constexpr Vec<3, T> min(Frustum<T> const& a)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr Vec<Dim, T> min(Frustum<Dim, T> const& a)
 {
-	// TODO: Implement
+	auto        c = corners(a);
+	Vec<Dim, T> v_min(std::numeric_limits<T>::max());
+
+	for (auto const& v : c) {
+		v_min = min(v_min, v);
+	}
+
+	return v_min;
 }
 
 template <std::size_t Dim, class T>
@@ -156,10 +163,17 @@ template <std::size_t Dim, class T>
 	return max(a.start, a.end) + a.radius;
 }
 
-template <class T>
-[[nodiscard]] constexpr Vec<3, T> max(Frustum<T> const& a)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr Vec<Dim, T> max(Frustum<Dim, T> const& a)
 {
-	// TODO: Implement
+	auto        c = corners(a);
+	Vec<Dim, T> v_max(std::numeric_limits<T>::lowest());
+
+	for (auto const& v : c) {
+		v_max = max(v_max, v);
+	}
+
+	return v_max;
 }
 
 template <std::size_t Dim, class T>
@@ -258,9 +272,19 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr std::array<Vec<Dim, T>, ipow(2, Dim)> corners(Frustum<T> const& a)
+[[nodiscard]] constexpr std::array<Vec<Dim, T>, ipow(2, Dim)> corners(
+    Frustum<Dim, T> const& a)
 {
-	// TODO: Implement
+	if constexpr (2 == Dim) {
+		return {intersectionPoint(a.far, a.right), intersectionPoint(a.far, a.left),
+		        intersectionPoint(a.near, a.left), intersectionPoint(a.near, a.right)};
+	} else if constexpr (3 == Dim) {
+		// TODO: Implement
+	} else if constexpr (4 == Dim) {
+		// TODO: Implement
+	} else {
+		// Error
+	}
 }
 
 template <std::size_t Dim, class T>

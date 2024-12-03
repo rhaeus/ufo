@@ -44,10 +44,10 @@
 
 // UFO
 #include <ufo/geometry/dynamic_geometry.hpp>
+#include <ufo/geometry/frustum.hpp>
 #include <ufo/geometry/shape/aabb.hpp>
 #include <ufo/geometry/shape/bs.hpp>
 #include <ufo/geometry/shape/capsule.hpp>
-#include <ufo/geometry/shape/frustum.hpp>
 #include <ufo/geometry/shape/line_segment.hpp>
 #include <ufo/geometry/shape/obb.hpp>
 #include <ufo/geometry/shape/plane.hpp>
@@ -165,10 +165,10 @@ template <std::size_t Dim, class T>
 	return contains(a, AABB<Dim, T>(min(b), max(b)));
 }
 
-template <class T>
-[[nodiscard]] constexpr bool contains(AABB<3, T> const& a, Frustum<T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(AABB<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
-	return contains(a, AABB<3, T>(min(b), max(b)));
+	return contains(a, AABB<Dim, T>(min(b), max(b)));
 }
 
 template <std::size_t Dim, class T>
@@ -237,8 +237,8 @@ template <std::size_t Dim, class T>
 	       distance(a.center, b.end) + b.radius <= a.radius;
 }
 
-template <class T>
-[[nodiscard]] constexpr bool contains(BS<3, T> const& a, Frustum<T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
 	for (auto c : corners(b)) {
 		if (!contains(a, c)) {
@@ -319,8 +319,8 @@ template <std::size_t Dim, class T>
 // 	// TODO: Implement
 // }
 
-template <class T>
-[[nodiscard]] constexpr bool contains(Capsule<3, T> const& a, Frustum<T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Capsule<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
 	for (auto c : corners(b)) {
 		if (!contains(a, c)) {
@@ -378,8 +378,8 @@ template <std::size_t Dim, class T>
 |                                                                                     |
 **************************************************************************************/
 
-template <class T>
-[[nodiscard]] constexpr bool contains(Frustum<T> const& a, AABB<3, T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Frustum<Dim, T> const& a, AABB<Dim, T> const& b)
 {
 	for (auto c : corners(b)) {
 		if (!contains(a, c)) {
@@ -389,20 +389,29 @@ template <class T>
 	return true;
 }
 
-// template <class T>
-// [[nodiscard]] constexpr bool contains(Frustum<T> const& a, BS<3, T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Frustum<Dim, T> const& a, BS<Dim, T> const& b)
+{
+	// The normals of each line/plane of the frustum point outwards, so check if distance
+	// to BS center is larger than radius for all of them
+	for (std::size_t i{}; i < Dim * 2; ++i) {
+		auto d = dot(a[i].normal, b.center) - a[i].distance;
+		if (std::abs(d) < b.radius) {
+			return false;
+		}
+	}
+	return true;
+}
+
+// template <std::size_t Dim, class T>
+// [[nodiscard]] constexpr bool contains(Frustum<Dim, T> const& a, Capsule<Dim, T> const&
+// b)
 // {
 // 	// TODO: Implement
 // }
 
-// template <class T>
-// [[nodiscard]] constexpr bool contains(Frustum<T> const& a, Capsule<3, T> const& b)
-// {
-// 	// TODO: Implement
-// }
-
-template <class T>
-[[nodiscard]] constexpr bool contains(Frustum<T> const& a, Frustum<T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Frustum<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
 	for (auto c : corners(b)) {
 		if (!contains(a, c)) {
@@ -412,14 +421,15 @@ template <class T>
 	return true;
 }
 
-template <class T>
-[[nodiscard]] constexpr bool contains(Frustum<T> const& a, LineSegment<3, T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Frustum<Dim, T> const&     a,
+                                      LineSegment<Dim, T> const& b)
 {
 	return contains(a, b.start) && contains(a, b.end);
 }
 
-template <class T>
-[[nodiscard]] constexpr bool contains(Frustum<T> const& a, OBB<3, T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Frustum<Dim, T> const& a, OBB<Dim, T> const& b)
 {
 	for (auto c : corners(b)) {
 		if (!contains(a, c)) {
@@ -430,28 +440,36 @@ template <class T>
 }
 
 template <class T>
-[[nodiscard]] constexpr bool contains(Frustum<T> const& a, Plane<T> const& b)
+[[nodiscard]] constexpr bool contains(Frustum<3, T> const& a, Plane<T> const& b)
 {
 	return false;
 }
 
-template <class T>
-[[nodiscard]] constexpr bool contains(Frustum<T> const& a, Ray<3, T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Frustum<Dim, T> const& a, Ray<Dim, T> const& b)
 {
 	return false;
 }
 
-template <class T>
-[[nodiscard]] constexpr bool contains(Frustum<T> const& a, Triangle<3, T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Frustum<Dim, T> const& a, Triangle<Dim, T> const& b)
 {
 	return contains(a, b[0]) && contains(a, b[1]) && contains(a, b[2]);
 }
 
-// template <class T>
-// [[nodiscard]] constexpr bool contains(Frustum<T> const& a, Vec<3, T> const& b)
-// {
-// 	// TODO: Implement
-// }
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Frustum<Dim, T> const& a, Vec<Dim, T> const& b)
+{
+	// The normals of each line/plane of the frustum point outwards, so check if the point
+	// is on the negative side of all lines
+	for (std::size_t i{}; i < Dim * 2; ++i) {
+		auto d = dot(a[i].normal, b) - a[i].distance;
+		if (d > T(0)) {
+			return false;
+		}
+	}
+	return true;
+}
 
 /**************************************************************************************
 |                                                                                     |
@@ -481,7 +499,8 @@ template <class T>
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr bool contains(LineSegment<3, T> const& a, Frustum<T> const& b)
+// [[nodiscard]] constexpr bool contains(LineSegment<3, T> const& a, Frustum<3, T> const&
+// b)
 // {
 // 	// TODO: Implement
 // }
@@ -555,8 +574,8 @@ template <std::size_t Dim, class T>
 // 	// TODO: Implement
 // }
 
-template <class T>
-[[nodiscard]] constexpr bool contains(OBB<3, T> const& a, Frustum<T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(OBB<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
 	for (auto c : corners(b)) {
 		if (!contains(a, c)) {
@@ -632,7 +651,7 @@ template <std::size_t Dim, class T>
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr bool contains(Plane<T> const& a, Frustum<T> const& b)
+// [[nodiscard]] constexpr bool contains(Plane<T> const& a, Frustum<3, T> const& b)
 // {
 // 	// TODO: Implement
 // }
@@ -698,7 +717,7 @@ template <std::size_t Dim, class T>
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr bool contains(Ray<3, T> const& a, Frustum<T> const& b)
+// [[nodiscard]] constexpr bool contains(Ray<3, T> const& a, Frustum<3, T> const& b)
 // {
 // 	// TODO: Implement
 // }
@@ -770,7 +789,7 @@ template <std::size_t Dim, class T>
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr bool contains(Triangle<3, T> const& a, Frustum<T> const& b)
+// [[nodiscard]] constexpr bool contains(Triangle<3, T> const& a, Frustum<3, T> const& b)
 // {
 // 	// TODO: Implement
 // }
@@ -837,8 +856,8 @@ template <std::size_t Dim, class T>
 	return T(0) == b.radius && a == b.start && a == b.end;
 }
 
-template <class T>
-[[nodiscard]] constexpr bool contains(Vec<3, T> const& a, Frustum<T> const& b)
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool contains(Vec<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
 	return a == min(b) && a == max(b);
 }
