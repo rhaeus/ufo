@@ -1,3 +1,7 @@
+option(UFO_TIME_DOCS     "Generate documentation" OFF)
+option(UFO_TIME_TESTING  "Unit testing"           OFF)
+option(UFO_TIME_COVERAGE "Test Coverage"          OFF)
+
 add_library(Time SHARED 
 	src/timer.cpp
 	src/timing.cpp
@@ -21,11 +25,11 @@ target_include_directories(Time
 		$<INSTALL_INTERFACE:include>
 )
 
-if(UFO_TESTING)
+if(UFO_TESTING OR UFO_TIME_TESTING)
   add_subdirectory(tests)
 endif()
 
-if(UFO_DOCS)
+if(UFO_DOCS OR UFO_TIME_DOCS)
 	add_subdirectory(docs)
 endif()
 
