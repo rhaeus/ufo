@@ -1,3 +1,7 @@
+option(UFO_MORTON_DOCS     "Generate documentation" OFF)
+option(UFO_MORTON_TESTING  "Unit testing"           OFF)
+option(UFO_MORTON_COVERAGE "Test Coverage"          OFF)
+
 add_library(Morton INTERFACE)
 add_library(UFO::Morton ALIAS Morton)
 
@@ -11,11 +15,11 @@ target_include_directories(Morton
 		$<INSTALL_INTERFACE:include>
 )
 
-if(UFO_TESTING)
+if(UFO_TESTING OR UFO_MORTON_TESTING)
   add_subdirectory(tests)
 endif()
 
-if(UFO_DOCS)
+if(UFO_DOCS OR UFO_MORTON_DOCS)
 	add_subdirectory(docs)
 endif()
 
