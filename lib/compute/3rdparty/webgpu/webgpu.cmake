@@ -1,11 +1,66 @@
 include(FetchContent)
 
-FetchContent_Declare(
-	webgpu
-	URL	https://github.com/gfx-rs/wgpu-native/releases/download/v0.19.3.1/wgpu-linux-x86_64-release.zip
-	# URL_HASH SHA512=916b6a8409c6f32d9d939c7cc1581795a1c019efc2bf21d701cc69ed4b9359ab0123eeb872a23061087fd82d8d367580d92ce9b73440db089ea58d39776fdaf2
-	PATCH_COMMAND       patch -p2 < ${CMAKE_CURRENT_SOURCE_DIR}/cmake/webgpu.patch
-	UPDATE_DISCONNECTED 1
-)
+if (NOT ARCH)
+	set(SYSTEM_PROCESSOR ${CMAKE_SYSTEM_PROCESSOR})
+	if (SYSTEM_PROCESSOR STREQUAL "AMD64" OR SYSTEM_PROCESSOR STREQUAL "x86_64")
+		if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+			set(ARCH "x86_64")
+		elseif (CMAKE_SIZEOF_VOID_P EQUAL 4)
+			set(ARCH "i686")
+		endif()
+	elseif (SYSTEM_PROCESSOR STREQUAL "arm64")
+		set(ARCH "aarch64")
+	endif()
+endif()
 
-FetchContent_MakeAvailable(webgpu)
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	set(OS "windows")
+
+	if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+		if (CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC")
+			set(COMPILER "msvc")
+		elseif (CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "GNU")
+			set(COMPILER "gnu")
+		endif()
+	elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+		set(COMPILER "gnu")
+	elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+		set(COMPILER "msvc")
+	endif()
+
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	set(OS "linux")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+	set(OS "macos")
+else()
+	message(FATAL_ERROR "Platform not supported by this release of UFO.")
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(WGPU_NATIVE_LIB_TYPE "debug")
+else()
+    set(WGPU_NATIVE_LIB_TYPE "release")
+endif()
+
+set(patch_command 
+	${CMAKE_COMMAND} -E copy_if_different 
+		"${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/webgpu/CMakeLists.txt.patch" 
+		"<SOURCE_DIR>/CMakeLists.txt" && 
+	${CMAKE_COMMAND} -E rename "<SOURCE_DIR>/include/wgpu/wgpu.h" "<SOURCE_DIR>/include/webgpu/wgpu.h" && 
+	${CMAKE_COMMAND} -E rm -r "<SOURCE_DIR>/include/wgpu")
+
+if(WIN32)
+	FetchContent_Declare(
+		wgpu-native
+		URL      https://github.com/gfx-rs/wgpu-native/releases/download/v22.1.0.5/wgpu-${OS}-${ARCH}-${COMPILER}-${WGPU_NATIVE_LIB_TYPE}.zip
+		PATCH_COMMAND ${patch_command}
+	)
+else()
+	FetchContent_Declare(
+		wgpu-native
+		URL      https://github.com/gfx-rs/wgpu-native/releases/download/v22.1.0.5/wgpu-${OS}-${ARCH}-${WGPU_NATIVE_LIB_TYPE}.zip
+		PATCH_COMMAND ${patch_command}
+	)
+endif()
+
+FetchContent_MakeAvailable(wgpu-native)

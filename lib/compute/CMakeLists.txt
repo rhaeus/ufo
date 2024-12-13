@@ -1,21 +1,33 @@
+option(UFOCOMPUTE_BUILD_DOCS     "Generate documentation" OFF)
+option(UFOCOMPUTE_BUILD_TESTS    "Unit testing"           OFF)
+option(UFOCOMPUTE_BUILD_COVERAGE "Test Coverage"          OFF)
+
 add_library(Compute INTERFACE)
 add_library(UFO::Compute ALIAS Compute)
 
-# target_link_libraries(Compute INTERFACE UFO::Utility)
-
 include(GNUInstallDirs)
 
-target_include_directories(Compute 
+include("3rdparty/webgpu/webgpu.cmake")
+
+if (WIN32)
+	set(OS_LIBRARIES d3dcompiler ws2_32 userenv bcrypt ntdll opengl32)
+elseif(UNIX AND NOT APPLE)
+	set(OS_LIBRARIES "-lm -ldl")
+elseif(APPLE)
+	set(OS_LIBRARIES "-framework CoreFoundation -framework QuartzCore -framework Metal")
+endif()
+
+target_link_libraries(Compute
 	INTERFACE
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-		$<INSTALL_INTERFACE:include>
+		webgpu
+		${OS_LIBRARIES}
 )
 
-if(UFO_TESTING)
+if(UFO_BUILD_TESTS OR UFOCOMPUTE_BUILD_TESTS)
   add_subdirectory(tests)
 endif()
 
-if(UFO_DOCS)
+if(UFO_BUILD_DOCS OR UFOCOMPUTE_BUILD_DOCS)
 	add_subdirectory(docs)
 endif()
 
@@ -53,9 +65,4 @@ install(
     "${CMAKE_CURRENT_BINARY_DIR}/Compute-config-version.cmake"
 	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
   COMPONENT Compute
-)
-
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include
-	COMPONENT Compute
-	DESTINATION ${CMAKE_INSTALL_PREFIX}
 )
