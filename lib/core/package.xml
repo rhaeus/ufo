@@ -9,7 +9,7 @@
 
   <license>BSD</license>
 
-  <url type="website">https://github.com/danielduberg/ufocore</url>
+  <url type="website">https://github.com/unknownfreeoccupied/ufocore</url>
 
   <buildtool_depend>cmake</buildtool_depend>
   
