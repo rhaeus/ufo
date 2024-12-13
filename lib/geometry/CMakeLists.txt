@@ -1,6 +1,6 @@
-option(UFO_GEOMETRY_DOCS     "Generate documentation" OFF)
-option(UFO_GEOMETRY_TESTING  "Unit testing"           OFF)
-option(UFO_GEOMETRY_COVERAGE "Test Coverage"          OFF)
+option(UFOGEOMETRY_BUILD_DOCS     "Generate documentation" OFF)
+option(UFOGEOMETRY_BUILD_TESTS    "Unit testing"           OFF)
+option(UFOGEOMETRY_BUILD_COVERAGE "Test Coverage"          OFF)
 
 add_library(Geometry INTERFACE)
 add_library(UFO::Geometry ALIAS Geometry)
@@ -18,11 +18,11 @@ target_include_directories(Geometry
 		$<INSTALL_INTERFACE:include>
 )
 
-if(UFO_TESTING OR UFO_GEOMETRY_TESTING)
+if(UFO_BUILD_TESTS OR UFOGEOMETRY_BUILD_TESTS)
   add_subdirectory(tests)
 endif()
 
-if(UFO_DOCS OR UFO_GEOMETRY_DOCS)
+if(UFO_BUILD_DOCS OR UFOGEOMETRY_BUILD_DOCS)
 	add_subdirectory(docs)
 endif()
 
