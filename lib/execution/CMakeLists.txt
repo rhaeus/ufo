@@ -76,6 +76,9 @@ else()
 				list(APPEND missingParallelLibs STL)
 			endif()
 
+	else()
+		message(CHECK_FAIL "no support")
+		list(APPEND missingParallelLibs STL)
 	endif()
 
 endif()
