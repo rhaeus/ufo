@@ -56,7 +56,7 @@ namespace ufo::compute
 
 [[nodiscard]] WGPUAdapter createAdapter(
     WGPUInstance instance, WGPUSurface surface = nullptr,
-    WGPUPowerPreference power_preference = WGPUPowerPreference_HighPerformance,
+    WGPUPowerPreference power_preference = WGPUPowerPreference_Undefined,
     WGPUBackendType     backend_type     = WGPUBackendType_Undefined);
 
 [[nodiscard]] WGPUDevice createDevice(WGPUAdapter adapter);
