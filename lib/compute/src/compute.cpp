@@ -3,6 +3,7 @@
 
 // STL
 #include <cassert>
+#include <cstring>
 #include <fstream>
 #include <iostream>
 
@@ -14,6 +15,8 @@ WGPUAdapter createAdapter(WGPUInstance instance, WGPUSurface surface,
                           WGPUPowerPreference power_preference,
                           WGPUBackendType     backend_type)
 {
+	assert(nullptr != instance);
+
 	struct UserData {
 		WGPUAdapter adapter       = nullptr;
 		bool        request_ended = false;
@@ -57,6 +60,8 @@ namespace detail
 {
 WGPUDevice createDevice(WGPUAdapter adapter, WGPURequiredLimits const* required_limits)
 {
+	assert(nullptr != adapter);
+
 	struct UserData {
 		WGPUDevice device        = nullptr;
 		bool       request_ended = false;
@@ -124,16 +129,46 @@ WGPUDevice createDevice(WGPUAdapter adapter, WGPURequiredLimits const& required_
 	return detail::createDevice(adapter, &required_limits);
 }
 
-WGPUQueue queue(WGPUDevice device) { return wgpuDeviceGetQueue(device); }
+WGPUQueue queue(WGPUDevice device)
+{
+	assert(nullptr != device);
+	return wgpuDeviceGetQueue(device);
+}
 
-WGPUBuffer createBuffer(WGPUDevice device, std::size_t size, WGPUBufferUsage usage,
+WGPUBuffer createBuffer(WGPUDevice device, std::size_t size, WGPUBufferUsageFlags usage,
                         bool mapped_at_creation)
 {
+	static constexpr std::size_t const COPY_BUFFER_ALIGNMENT = 4;
+
+	std::size_t unpadded_size = size;
+	std::size_t align_mask    = COPY_BUFFER_ALIGNMENT - 1;
+	std::size_t padded_size =
+	    std::max((unpadded_size + align_mask) & ~align_mask, COPY_BUFFER_ALIGNMENT);
+
 	WGPUBufferDescriptor desc{};
-	desc.size             = size;
+	desc.label            = "";
+	desc.size             = padded_size;
 	desc.usage            = usage;
 	desc.mappedAtCreation = mapped_at_creation;
 	return wgpuDeviceCreateBuffer(device, &desc);
+}
+
+WGPUBuffer createBufferInit(WGPUDevice device, WGPUBufferUsageFlags usage, void* content,
+                            std::size_t content_size)
+{
+	if (0 == content_size) {
+		return createBuffer(device, 0, usage, false);
+	}
+
+	WGPUBuffer buffer = createBuffer(device, content_size, usage, true);
+
+	assert(nullptr != buffer);
+
+	void* buf = wgpuBufferGetMappedRange(buffer, 0, content_size);
+	std::memcpy(buf, content, content_size);
+	wgpuBufferUnmap(buffer);
+
+	return buffer;
 }
 
 WGPUShaderModule loadShaderModule(WGPUDevice device, std::filesystem::path const& path)

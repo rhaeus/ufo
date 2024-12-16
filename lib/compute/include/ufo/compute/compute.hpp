@@ -42,6 +42,8 @@
 #ifndef UFO_COMPUTE_COMPUTE_HPP
 #define UFO_COMPUTE_COMPUTE_HPP
 
+#define UFO_WEBGPU
+
 // STL
 #include <filesystem>
 
@@ -63,6 +65,13 @@ namespace ufo::compute
                                       WGPURequiredLimits const& required_limits);
 
 [[nodiscard]] WGPUQueue queue(WGPUDevice device);
+
+[[nodiscard]] WGPUBuffer createBuffer(WGPUDevice device, std::size_t size,
+                                      WGPUBufferUsageFlags usage,
+                                      bool                 mapped_at_creation = true);
+
+[[nodiscard]] WGPUBuffer createBufferInit(WGPUDevice device, WGPUBufferUsageFlags usage,
+                                          void* content, std::size_t content_size);
 
 [[nodiscard]] WGPUSurfaceCapabilities surfaceCapabilities(WGPUSurface surface,
                                                           WGPUAdapter adapter);
