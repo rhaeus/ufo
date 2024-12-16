@@ -54,7 +54,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#if defined(UFO_MORTON_BMI2) && defined(__BMI2__)
+#if defined(UFO_MORTON_BMI2) && (defined(__BMI2__) || defined(__AVX2__))
 #define UFO_MORTON_CONSTEXPR
 #include <immintrin.h>
 #else
@@ -83,7 +83,7 @@ struct Morton<4> {
 	                                                                 std::uint32_t z,
 	                                                                 std::uint32_t w)
 	{
-#if defined(UFO_MORTON_BMI2) && defined(__BMI2__)
+#if defined(UFO_MORTON_BMI2) && (defined(__BMI2__) || defined(__AVX2__))
 		return _pdep_u32(x, X_M_32) | _pdep_u32(y, Y_M_32) | _pdep_u32(z, Z_M_32) |
 		       _pdep_u32(w, W_M_32);
 #else
@@ -101,7 +101,7 @@ struct Morton<4> {
 	                                                                 std::uint32_t z,
 	                                                                 std::uint32_t w)
 	{
-#if defined(UFO_MORTON_BMI2) && defined(__BMI2__)
+#if defined(UFO_MORTON_BMI2) && (defined(__BMI2__) || defined(__AVX2__))
 		return _pdep_u64(x, X_M_64) | _pdep_u64(y, Y_M_64) | _pdep_u64(z, Z_M_64) |
 		       _pdep_u64(w, W_M_64);
 #else
@@ -116,7 +116,7 @@ struct Morton<4> {
 
 	[[nodiscard]] static UFO_MORTON_CONSTEXPR Vec4u decode32(std::uint32_t m)
 	{
-#if defined(UFO_MORTON_BMI2) && defined(__BMI2__)
+#if defined(UFO_MORTON_BMI2) && (defined(__BMI2__) || defined(__AVX2__))
 		return Vec4u(_pext_u32(m, X_M_32), _pext_u32(m, Y_M_32), _pext_u32(m, Z_M_32),
 		             _pext_u32(m, W_M_32));
 #else
@@ -133,7 +133,7 @@ struct Morton<4> {
 
 	[[nodiscard]] static UFO_MORTON_CONSTEXPR Vec4u decode64(std::uint64_t m)
 	{
-#if defined(UFO_MORTON_BMI2) && defined(__BMI2__)
+#if defined(UFO_MORTON_BMI2) && (defined(__BMI2__) || defined(__AVX2__))
 		return Vec4u(_pext_u64(m, X_M_64), _pext_u64(m, Y_M_64), _pext_u64(m, Z_M_64),
 		             _pext_u64(m, W_M_64));
 #else
@@ -150,7 +150,7 @@ struct Morton<4> {
 
 	[[nodiscard]] static UFO_MORTON_CONSTEXPR std::uint32_t spread32(std::uint32_t x)
 	{
-#if defined(UFO_MORTON_BMI2) && defined(__BMI2__)
+#if defined(UFO_MORTON_BMI2) && (defined(__BMI2__) || defined(__AVX2__))
 		return _pdep_u32(x, X_M_32);
 #else
 		std::uint32_t m(x);
@@ -166,7 +166,7 @@ struct Morton<4> {
 
 	[[nodiscard]] static UFO_MORTON_CONSTEXPR std::uint64_t spread64(std::uint32_t x)
 	{
-#if defined(UFO_MORTON_BMI2) && defined(__BMI2__)
+#if defined(UFO_MORTON_BMI2) && (defined(__BMI2__) || defined(__AVX2__))
 		return _pdep_u64(x, X_M_64);
 #else
 		std::uint64_t m(x);
@@ -183,7 +183,7 @@ struct Morton<4> {
 
 	[[nodiscard]] static UFO_MORTON_CONSTEXPR std::uint32_t compact32(std::uint32_t m)
 	{
-#if defined(UFO_MORTON_BMI2) && defined(__BMI2__)
+#if defined(UFO_MORTON_BMI2) && (defined(__BMI2__) || defined(__AVX2__))
 		return _pext_u32(m, X_M_32);
 #else
 		std::uint32_t x(m);
@@ -199,7 +199,7 @@ struct Morton<4> {
 
 	[[nodiscard]] static UFO_MORTON_CONSTEXPR std::uint32_t compact64(std::uint64_t m)
 	{
-#if defined(UFO_MORTON_BMI2) && defined(__BMI2__)
+#if defined(UFO_MORTON_BMI2) && (defined(__BMI2__) || defined(__AVX2__))
 		return static_cast<std::uint32_t>(_pext_u64(m, X_M_64));
 #else
 		std::uint64_t x(m);
