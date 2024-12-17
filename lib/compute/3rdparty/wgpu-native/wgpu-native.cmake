@@ -36,18 +36,16 @@ else()
 	message(FATAL_ERROR "Platform not supported by this release of UFO.")
 endif()
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(WGPU_NATIVE_LIB_TYPE "debug")
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+	set(WGPU_NATIVE_LIB_TYPE "release")
 else()
-    set(WGPU_NATIVE_LIB_TYPE "release")
+	set(WGPU_NATIVE_LIB_TYPE "debug")
 endif()
 
 set(patch_command 
 	${CMAKE_COMMAND} -E copy_if_different 
-		"${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/webgpu/CMakeLists.txt.patch" 
-		"<SOURCE_DIR>/CMakeLists.txt" && 
-	${CMAKE_COMMAND} -E rename "<SOURCE_DIR>/include/wgpu/wgpu.h" "<SOURCE_DIR>/include/webgpu/wgpu.h" && 
-	${CMAKE_COMMAND} -E rm -r "<SOURCE_DIR>/include/wgpu")
+		"${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/wgpu-native/CMakeLists.txt.patch" 
+		"<SOURCE_DIR>/CMakeLists.txt")
 
 if(WIN32)
 	FetchContent_Declare(

@@ -17,7 +17,7 @@ set_target_properties(Compute
 		OUTPUT_NAME "UFOCompute"
 )
 
-include("3rdparty/webgpu/webgpu.cmake")
+include("3rdparty/wgpu-native/wgpu-native.cmake")
 
 if (WIN32)
 	set(OS_LIBRARIES d3dcompiler ws2_32 userenv bcrypt ntdll opengl32)
@@ -29,7 +29,7 @@ endif()
 
 target_link_libraries(Compute
 	PUBLIC
-		webgpu
+		wgpu_native
 		${OS_LIBRARIES}
 )
 

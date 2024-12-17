@@ -5,27 +5,40 @@ set(WGPU ${CMAKE_CURRENT_SOURCE_DIR})
 
 # A pre-compiled target (IMPORTED) that is a dynamically
 # linked library (SHARED, meaning .dll, .so or .dylib).
-add_library(webgpu SHARED IMPORTED GLOBAL)
+add_library(wgpu_native SHARED IMPORTED GLOBAL)
+add_library(wgpu_native_static STATIC IMPORTED GLOBAL)
 
 if (WIN32)
 
 	set(WGPU_RUNTIME_LIB ${WGPU}/lib/wgpu_native.dll)
-	set_target_properties(
-		webgpu
+	set_target_properties(wgpu_native
 		PROPERTIES
 			IMPORTED_LOCATION "${WGPU_RUNTIME_LIB}"
 			IMPORTED_IMPLIB "${WGPU_RUNTIME_LIB}.lib"
 			INTERFACE_INCLUDE_DIRECTORIES "${WGPU}/include"
 	)
 
+	target_link_libraries(wgpu_native_static INTERFACE d3dcompiler.lib Ws2_32.lib Userenv.lib ntdll.lib Bcrypt.lib Opengl32.lib)
+		set_target_properties(wgpu_native_static
+			PROPERTIES
+				IMPORTED_LOCATION "${WGPU}/lib/wgpu_native.dll"
+				IMPORTED_IMPLIB "${WGPU}/lib/wgpu_native.dll"
+				INTERFACE_INCLUDE_DIRECTORIES "${WGPU}/include"
+		)	
+
 elseif(UNIX AND NOT APPLE)
 
 	set(WGPU_RUNTIME_LIB ${WGPU}/lib/libwgpu_native.so)
-	set_target_properties(
-		webgpu
+	set_target_properties(wgpu_native
 		PROPERTIES
 			IMPORTED_LOCATION "${WGPU_RUNTIME_LIB}"
 			IMPORTED_NO_SONAME TRUE
+			INTERFACE_INCLUDE_DIRECTORIES "${WGPU}/include"
+	)
+
+	set_target_properties(wgpu_native_static
+		PROPERTIES
+			IMPORTED_LOCATION "${WGPU}/lib/libwgpu_native.a"
 			INTERFACE_INCLUDE_DIRECTORIES "${WGPU}/include"
 	)
 
@@ -33,9 +46,21 @@ elseif(APPLE)
 
 	set(WGPU_RUNTIME_LIB ${WGPU}/lib/libwgpu_native.dylib)
 	set_target_properties(
-		webgpu
+		wgpu_native
 		PROPERTIES
 			IMPORTED_LOCATION "${WGPU_RUNTIME_LIB}"
+			INTERFACE_INCLUDE_DIRECTORIES "${WGPU}/include"
+	)
+
+	target_link_libraries(wgpu_native_static 
+		INTERFACE 
+			"-framework Metal" 
+			"-framework QuartzCore" 
+			"-framework MetalKit"
+	)
+	set_target_properties(wgpu_native_static
+		PROPERTIES
+			IMPORTED_LOCATION "${WGPU}/lib/libwgpu_native.a"
 			INTERFACE_INCLUDE_DIRECTORIES "${WGPU}/include"
 	)
 
@@ -48,6 +73,20 @@ endif()
 message(STATUS "Using WebGPU runtime from '${WGPU_RUNTIME_LIB}'")
 set(WGPU_RUNTIME_LIB ${WGPU_RUNTIME_LIB} PARENT_SCOPE)
 set(WGPU_RUNTIME_LIB ${WGPU_RUNTIME_LIB} CACHE INTERNAL "Path to the WebGPU library binary")
+
+target_include_directories(wgpu_native 
+	INTERFACE
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/wgpu>
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/webgpu>
+		$<INSTALL_INTERFACE:include/webgpu>
+)
+
+target_include_directories(wgpu_native_static 
+	INTERFACE
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/wgpu>
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/webgpu>
+		$<INSTALL_INTERFACE:include/webgpu>
+)
 
 # The application's binary must find wgpu.dll or libwgpu.so at runtime,
 # so we automatically copy it (it's called WGPU_RUNTIME_LIB in general)

@@ -135,15 +135,18 @@ WGPUQueue queue(WGPUDevice device)
 	return wgpuDeviceGetQueue(device);
 }
 
-WGPUBuffer createBuffer(WGPUDevice device, std::size_t size, WGPUBufferUsageFlags usage,
-                        bool mapped_at_creation)
+std::size_t bufferPaddedSize(std::size_t size)
 {
 	static constexpr std::size_t const COPY_BUFFER_ALIGNMENT = 4;
 
-	std::size_t unpadded_size = size;
-	std::size_t align_mask    = COPY_BUFFER_ALIGNMENT - 1;
-	std::size_t padded_size =
-	    std::max((unpadded_size + align_mask) & ~align_mask, COPY_BUFFER_ALIGNMENT);
+	std::size_t align_mask = COPY_BUFFER_ALIGNMENT - 1;
+	return std::max((size + align_mask) & ~align_mask, COPY_BUFFER_ALIGNMENT);
+}
+
+WGPUBuffer createBuffer(WGPUDevice device, std::size_t size, WGPUBufferUsageFlags usage,
+                        bool mapped_at_creation)
+{
+	std::size_t padded_size = bufferPaddedSize(size);
 
 	WGPUBufferDescriptor desc{};
 	desc.label            = "";

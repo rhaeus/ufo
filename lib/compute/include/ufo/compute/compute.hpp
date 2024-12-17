@@ -66,9 +66,11 @@ namespace ufo::compute
 
 [[nodiscard]] WGPUQueue queue(WGPUDevice device);
 
+[[nodiscard]] std::size_t bufferPaddedSize(std::size_t size);
+
 [[nodiscard]] WGPUBuffer createBuffer(WGPUDevice device, std::size_t size,
                                       WGPUBufferUsageFlags usage,
-                                      bool                 mapped_at_creation = true);
+                                      bool                 mapped_at_creation = false);
 
 [[nodiscard]] WGPUBuffer createBufferInit(WGPUDevice device, WGPUBufferUsageFlags usage,
                                           void* content, std::size_t content_size);
