@@ -5,9 +5,15 @@ option(UFOEXECUTION_BUILD_COVERAGE "Test Coverage"          OFF)
 add_library(Execution INTERFACE)
 add_library(UFO::Execution ALIAS Execution)
 
+target_link_libraries(Execution INTERFACE UFO::Utility)
+
 # Threading library required in Linux (not in MacOS and Windows, they should just ignore it. Windows might give a warning)
 find_package(Threads REQUIRED)
 target_link_libraries(Execution INTERFACE Threads::Threads)
+
+
+include(CheckCXXSourceCompiles)
+include(CMakePushCheckState)
 
 message(CHECK_START "Finding parallel processing libraries")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
@@ -18,18 +24,43 @@ message(CHECK_START "Finding Threading Building Blocks (TBB)")
 find_package(TBB QUIET)
 
 if(TBB_FOUND)
-	message(CHECK_PASS "found and enabled")
-	target_link_libraries(Execution INTERFACE TBB::tbb)
-	target_compile_definitions(Execution INTERFACE UFO_PAR_TBB=1)
+	list(APPEND CMAKE_MESSAGE_INDENT "  ")
+	message(CHECK_START "Checking if oneTBB and not TBB")
+
+	cmake_push_check_state()
+	set(CMAKE_REQUIRED_FLAGS "-O0")
+	set(CMAKE_REQUIRED_LIBRARIES "TBB::tbb")
+	# TODO: Fix sample code
+	check_cxx_source_compiles("
+			// #include <oneapi/tbb.h>
+			int main() {
+				return 0;
+			}
+		" HAVE_ONETBB_PAR)
+
+	cmake_pop_check_state()
+
+	if(HAVE_ONETBB_PAR)
+
+		message(CHECK_PASS "has oneTBB")
+		list(POP_BACK CMAKE_MESSAGE_INDENT)
+		message(CHECK_PASS "found and enabled")
+		target_link_libraries(Execution INTERFACE TBB::tbb)
+		target_compile_definitions(Execution INTERFACE UFO_PAR_TBB=1)
+	
+	else()
+		message(CHECK_FAIL "only has old TBB (not oneTBB)")
+		list(POP_BACK CMAKE_MESSAGE_INDENT)
+		message(CHECK_FAIL "not found and disabled")
+		list(APPEND missingParallelLibs TBB)
+	endif()
+
 else()
 	message(CHECK_FAIL "not found and disabled")
 	list(APPEND missingParallelLibs TBB)
 endif()
 
 message(CHECK_START "Checking Standard Template Library (STL) parallel support")
-
-include(CheckCXXSourceCompiles)
-include(CMakePushCheckState)
 
 cmake_push_check_state()
 
@@ -70,6 +101,7 @@ else()
 
 			if(HAVE_STL_PAR_USING_TBB)
 				message(CHECK_PASS "has support using TBB")
+				target_link_libraries(Execution INTERFACE TBB::tbb)
 				target_compile_definitions(Execution INTERFACE UFO_PAR_STL=1)
 			else()
 				message(CHECK_FAIL "no support")
