@@ -19,7 +19,7 @@ set_target_properties(Compute
 		OUTPUT_NAME "UFOCompute"
 )
 
-set(WGPU "${CMAKE_CURRENT_SOURCE_DIR}/wgpu")
+set(WGPU "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/wgpu")
 set(WGPU_RUNTIME_LIB "${WGPU}/lib/libwgpu_native.so")
 
 if(WIN32)
@@ -40,7 +40,7 @@ target_link_libraries(Compute
 target_include_directories(Compute
 	PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/wgpu/include>
+		$<BUILD_INTERFACE:${WGPU}/include>
 		$<INSTALL_INTERFACE:include>
 )
 
@@ -93,7 +93,7 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include
 	DESTINATION ${CMAKE_INSTALL_PREFIX}
 )
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/wgpu/lib/libwgpu_native.so 
+install(FILES ${WGPU}/lib/libwgpu_native.so 
 	COMPONENT Compute
 	DESTINATION lib
 )
