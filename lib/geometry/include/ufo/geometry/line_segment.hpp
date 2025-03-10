@@ -82,7 +82,7 @@ struct LineSegment {
 //
 
 template <std::size_t Dim, class T>
-LineSegment(LineSegment<Dim, T>, LineSegment<Dim, T>) -> LineSegment<Dim, T>;
+LineSegment(Vec<Dim, T>, Vec<Dim, T>) -> LineSegment<Dim, T>;
 
 /*!
  * @brief Compare two LineSegments.

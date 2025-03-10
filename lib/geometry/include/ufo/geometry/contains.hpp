@@ -43,16 +43,16 @@
 #define UFO_GEOMETRY_CONTAINS_HPP
 
 // UFO
+#include <ufo/geometry/aabb.hpp>
+#include <ufo/geometry/capsule.hpp>
 #include <ufo/geometry/dynamic_geometry.hpp>
 #include <ufo/geometry/frustum.hpp>
-#include <ufo/geometry/shape/aabb.hpp>
-#include <ufo/geometry/shape/bs.hpp>
-#include <ufo/geometry/shape/capsule.hpp>
-#include <ufo/geometry/shape/line_segment.hpp>
-#include <ufo/geometry/shape/obb.hpp>
-#include <ufo/geometry/shape/plane.hpp>
-#include <ufo/geometry/shape/ray.hpp>
-#include <ufo/geometry/shape/triangle.hpp>
+#include <ufo/geometry/line_segment.hpp>
+#include <ufo/geometry/obb.hpp>
+#include <ufo/geometry/plane.hpp>
+#include <ufo/geometry/ray.hpp>
+#include <ufo/geometry/sphere.hpp>
+#include <ufo/geometry/triangle.hpp>
 #include <ufo/math/vec.hpp>
 
 // STL
@@ -154,7 +154,7 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool contains(AABB<Dim, T> const& a, BS<Dim, T> const& b)
+[[nodiscard]] constexpr bool contains(AABB<Dim, T> const& a, Sphere<Dim, T> const& b)
 {
 	return contains(a, AABB<Dim, T>(min(b), max(b)));
 }
@@ -209,12 +209,12 @@ template <std::size_t Dim, class T>
 
 /**************************************************************************************
 |                                                                                     |
-|                                         BS                                          |
+|                                       Sphere                                        |
 |                                                                                     |
 **************************************************************************************/
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, AABB<Dim, T> const& b)
+[[nodiscard]] constexpr bool contains(Sphere<Dim, T> const& a, AABB<Dim, T> const& b)
 {
 	for (auto c : corners(b)) {
 		if (!contains(a, c)) {
@@ -225,20 +225,20 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, BS<Dim, T> const& b)
+[[nodiscard]] constexpr bool contains(Sphere<Dim, T> const& a, Sphere<Dim, T> const& b)
 {
 	return a.radius >= distance(a.center, b.center) + b.radius;
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, Capsule<Dim, T> const& b)
+[[nodiscard]] constexpr bool contains(Sphere<Dim, T> const& a, Capsule<Dim, T> const& b)
 {
 	return distance(a.center, b.start) + b.radius <= a.radius &&
 	       distance(a.center, b.end) + b.radius <= a.radius;
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, Frustum<Dim, T> const& b)
+[[nodiscard]] constexpr bool contains(Sphere<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
 	for (auto c : corners(b)) {
 		if (!contains(a, c)) {
@@ -249,13 +249,14 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, LineSegment<Dim, T> const& b)
+[[nodiscard]] constexpr bool contains(Sphere<Dim, T> const&      a,
+                                      LineSegment<Dim, T> const& b)
 {
 	return contains(a, b.start) && contains(a, b.end);
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, OBB<Dim, T> const& b)
+[[nodiscard]] constexpr bool contains(Sphere<Dim, T> const& a, OBB<Dim, T> const& b)
 {
 	for (auto c : corners(b)) {
 		if (!contains(a, c)) {
@@ -266,25 +267,25 @@ template <std::size_t Dim, class T>
 }
 
 template <class T>
-[[nodiscard]] constexpr bool contains(BS<3, T> const& a, Plane<T> const& b)
+[[nodiscard]] constexpr bool contains(Sphere<3, T> const& a, Plane<T> const& b)
 {
 	return false;
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, Ray<Dim, T> const& b)
+[[nodiscard]] constexpr bool contains(Sphere<Dim, T> const& a, Ray<Dim, T> const& b)
 {
 	return false;
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, Triangle<Dim, T> const& b)
+[[nodiscard]] constexpr bool contains(Sphere<Dim, T> const& a, Triangle<Dim, T> const& b)
 {
 	return contains(a, b[0]) && contains(a, b[1]) && contains(a, b[2]);
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool contains(BS<Dim, T> const& a, Vec<Dim, T> const& b)
+[[nodiscard]] constexpr bool contains(Sphere<Dim, T> const& a, Vec<Dim, T> const& b)
 {
 	return distanceSquared(a, b) <= a.radius * a.radius;
 }
@@ -307,7 +308,8 @@ template <std::size_t Dim, class T>
 }
 
 // template <std::size_t Dim, class T>
-// [[nodiscard]] constexpr bool contains(Capsule<Dim, T> const& a, BS<Dim, T> const& b)
+// [[nodiscard]] constexpr bool contains(Capsule<Dim, T> const& a, Sphere<Dim, T> const&
+// b)
 // {
 // 	// TODO: Implement
 // }
@@ -390,10 +392,10 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool contains(Frustum<Dim, T> const& a, BS<Dim, T> const& b)
+[[nodiscard]] constexpr bool contains(Frustum<Dim, T> const& a, Sphere<Dim, T> const& b)
 {
 	// The normals of each line/plane of the frustum point outwards, so check if distance
-	// to BS center is larger than radius for all of them
+	// to Sphere center is larger than radius for all of them
 	for (std::size_t i{}; i < Dim * 2; ++i) {
 		auto d = dot(a[i].normal, b.center) - a[i].distance;
 		if (std::abs(d) < b.radius) {
@@ -485,8 +487,8 @@ template <std::size_t Dim, class T>
 // }
 
 // template <std::size_t Dim, class T>
-// [[nodiscard]] constexpr bool contains(LineSegment<Dim, T> const& a, BS<Dim, T> const&
-// b)
+// [[nodiscard]] constexpr bool contains(LineSegment<Dim, T> const& a, Sphere<Dim, T>
+// const& b)
 // {
 // 	// TODO: Implement
 // }
@@ -563,7 +565,7 @@ template <std::size_t Dim, class T>
 }
 
 // template <std::size_t Dim, class T>
-// [[nodiscard]] constexpr bool contains(OBB<Dim, T> const& a, BS<Dim, T> const& b)
+// [[nodiscard]] constexpr bool contains(OBB<Dim, T> const& a, Sphere<Dim, T> const& b)
 // {
 // 	// TODO: Implement
 // }
@@ -639,7 +641,7 @@ template <std::size_t Dim, class T>
 // }
 
 // template <class T>
-// [[nodiscard]] constexpr bool contains(Plane<T> const& a, BS<3, T> const& b)
+// [[nodiscard]] constexpr bool contains(Plane<T> const& a, Sphere<3, T> const& b)
 // {
 // 	// TODO: Implement
 // }
@@ -705,7 +707,7 @@ template <std::size_t Dim, class T>
 // }
 
 // template <std::size_t Dim, class T>
-// [[nodiscard]] constexpr bool contains(Ray<Dim, T> const& a, BS<Dim, T> const& b)
+// [[nodiscard]] constexpr bool contains(Ray<Dim, T> const& a, Sphere<Dim, T> const& b)
 // {
 // 	// TODO: Implement
 // }
@@ -776,7 +778,8 @@ template <std::size_t Dim, class T>
 // }
 
 // template <std::size_t Dim, class T>
-// [[nodiscard]] constexpr bool contains(Triangle<Dim, T> const& a, BS<Dim, T> const& b)
+// [[nodiscard]] constexpr bool contains(Triangle<Dim, T> const& a, Sphere<Dim, T> const&
+// b)
 // {
 // 	// TODO: Implement
 // }
@@ -845,7 +848,7 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool contains(Vec<Dim, T> const& a, BS<Dim, T> const& b)
+[[nodiscard]] constexpr bool contains(Vec<Dim, T> const& a, Sphere<Dim, T> const& b)
 {
 	return T(0) == b.radius && a == b.center;
 }

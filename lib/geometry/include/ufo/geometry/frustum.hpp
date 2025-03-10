@@ -44,7 +44,7 @@
 
 // UFO
 #include <ufo/geometry/line.hpp>
-#include <ufo/geometry/shape/plane.hpp>
+#include <ufo/geometry/plane.hpp>
 #include <ufo/math/vec.hpp>
 
 // STL

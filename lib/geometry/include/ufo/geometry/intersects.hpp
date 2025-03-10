@@ -43,18 +43,18 @@
 #define UFO_GEOMETRY_INTERSECTS_HPP
 
 // UFO
+#include <ufo/geometry/aabb.hpp>
+#include <ufo/geometry/capsule.hpp>
 #include <ufo/geometry/closest_point.hpp>
 #include <ufo/geometry/detail/helper.hpp>
 #include <ufo/geometry/frustum.hpp>
 #include <ufo/geometry/line.hpp>
-#include <ufo/geometry/shape/aabb.hpp>
-#include <ufo/geometry/shape/bs.hpp>
-#include <ufo/geometry/shape/capsule.hpp>
-#include <ufo/geometry/shape/line_segment.hpp>
-#include <ufo/geometry/shape/obb.hpp>
-#include <ufo/geometry/shape/plane.hpp>
-#include <ufo/geometry/shape/ray.hpp>
-#include <ufo/geometry/shape/triangle.hpp>
+#include <ufo/geometry/line_segment.hpp>
+#include <ufo/geometry/obb.hpp>
+#include <ufo/geometry/plane.hpp>
+#include <ufo/geometry/ray.hpp>
+#include <ufo/geometry/sphere.hpp>
+#include <ufo/geometry/triangle.hpp>
 #include <ufo/math/vec.hpp>
 
 // STL
@@ -75,19 +75,10 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool intersects(AABB<Dim, T> const& a, BS<Dim, T> const& b)
-{
-	auto closest_point    = closestPoint(a, b.center);
-	auto distance_squared = distanceSquared(closest_point, b.center);
-	auto radius_squared   = b.radius * b.radius;
-	return distance_squared <= radius_squared;
-}
-
-template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool intersects(AABB<Dim, T> const& a, Capsule<Dim, T> const& b)
 {
-	// if (intersects(a, BS(b.start, b.radius)) || intersects(a, BS(b.end, b.radius))) {
-	// 	return true;
+	// if (intersects(a, Sphere(b.start, b.radius)) || intersects(a, Sphere(b.end,
+	// b.radius))) { 	return true;
 	// }
 
 	// auto        c  = a.center();
@@ -101,17 +92,25 @@ template <std::size_t Dim, class T>
 	// return b.radius * b.radius >= distanceSquared(a, closest_point);
 
 	// // TODO: Implement correct
-	return intersects(a, BS(b.start, b.radius)) || intersects(a, BS(b.end, b.radius)) ||
+	return intersects(a, Sphere(b.start, b.radius)) ||
+	       intersects(a, Sphere(b.end, b.radius)) ||
 	       intersects(a, LineSegment(b.start, b.end));
 }
 
-// template <class T>
-// [[nodiscard]] constexpr bool intersects(AABB<3, T> const& a, Frustum<3, T> const& b)
-// {
-// 	return 0 <= detail::classify(a, b.bottom) && 0 <= detail::classify(a, b.far) &&
-// 	       0 <= detail::classify(a, b.left) && 0 <= detail::classify(a, b.near) &&
-// 	       0 <= detail::classify(a, b.right) && 0 <= detail::classify(a, b.top);
-// }
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool intersects(AABB<Dim, T> const& a, Frustum<Dim, T> const& b)
+{
+	if constexpr (2 == Dim) {
+		// TODO: Implement
+		return false;
+	} else if constexpr (3 == Dim) {
+		return 0 <= detail::classify(a, b.bottom) && 0 <= detail::classify(a, b.far) &&
+		       0 <= detail::classify(a, b.left) && 0 <= detail::classify(a, b.near) &&
+		       0 <= detail::classify(a, b.right) && 0 <= detail::classify(a, b.top);
+	} else {
+		// TODO: Implement
+	}
+}
 
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool intersects(AABB<Dim, T> const&        a,
@@ -123,6 +122,15 @@ template <std::size_t Dim, class T>
 	T length      = norm(ray.direction);
 	ray.direction /= length;
 	return detail::intersectsLine(a, ray, T(0), length);
+}
+
+template <std::size_t Dim, class T>
+[[nodiscard]] constexpr bool intersects(AABB<Dim, T> const& a, Sphere<Dim, T> const& b)
+{
+	auto closest_point    = closestPoint(a, b.center);
+	auto distance_squared = distanceSquared(closest_point, b.center);
+	auto radius_squared   = b.radius * b.radius;
+	return distance_squared <= radius_squared;
 }
 
 struct Interval2D {
@@ -322,18 +330,18 @@ template <std::size_t Dim, class T>
 
 /**************************************************************************************
 |                                                                                     |
-|                                         BS                                          |
+|                                       Sphere                                        |
 |                                                                                     |
 **************************************************************************************/
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool intersects(BS<Dim, T> const& a, AABB<Dim, T> const& b)
+[[nodiscard]] constexpr bool intersects(Sphere<Dim, T> const& a, AABB<Dim, T> const& b)
 {
 	return intersects(b, a);
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool intersects(BS<Dim, T> const& a, BS<Dim, T> const& b)
+[[nodiscard]] constexpr bool intersects(Sphere<Dim, T> const& a, Sphere<Dim, T> const& b)
 {
 	auto radius_sum       = a.radius + b.radius;
 	auto distance_squared = normSquared(a.center - b.center);
@@ -341,13 +349,14 @@ template <std::size_t Dim, class T>
 }
 
 // template <std::size_t Dim, class T>
-// [[nodiscard]] constexpr bool intersects(BS<Dim, T> const& a, Capsule<Dim, T> const& b)
+// [[nodiscard]] constexpr bool intersects(Sphere<Dim, T> const& a, Capsule<Dim, T> const&
+// b)
 // {
 // 	// TODO: Implement
 // }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool intersects(BS<Dim, T> const& a, Frustum<Dim, T> const& b)
+[[nodiscard]] constexpr bool intersects(Sphere<Dim, T> const& a, Frustum<Dim, T> const& b)
 {
 	for (std::size_t i{}; Dim * 2 > i; ++i) {
 		if (-a.radius > dot(a.center, b[i].normal) + b[i].distance) {
@@ -358,7 +367,8 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool intersects(BS<Dim, T> const& a, LineSegment<Dim, T> const& b)
+[[nodiscard]] constexpr bool intersects(Sphere<Dim, T> const&      a,
+                                        LineSegment<Dim, T> const& b)
 {
 	auto closest_point    = closestPoint(b, a.center);
 	auto distance_squared = distanceSquared(closest_point, a.center);
@@ -366,7 +376,7 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool intersects(BS<Dim, T> const& a, OBB<Dim, T> const& b)
+[[nodiscard]] constexpr bool intersects(Sphere<Dim, T> const& a, OBB<Dim, T> const& b)
 {
 	auto closest_point    = closestPoint(b, a.center);
 	auto distance_squared = distanceSquared(closest_point, a.center);
@@ -374,7 +384,7 @@ template <std::size_t Dim, class T>
 }
 
 template <class T>
-[[nodiscard]] constexpr bool intersects(BS<3, T> const& a, Plane<T> const& b)
+[[nodiscard]] constexpr bool intersects(Sphere<3, T> const& a, Plane<T> const& b)
 {
 	auto closest_point    = closestPoint(b, a.center);
 	auto distance_squared = distanceSquared(closest_point, a.center);
@@ -382,7 +392,7 @@ template <class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool intersects(BS<Dim, T> const& a, Ray<Dim, T> const& b)
+[[nodiscard]] constexpr bool intersects(Sphere<Dim, T> const& a, Ray<Dim, T> const& b)
 {
 	auto e    = a.center - b.origin;
 	auto r_sq = a.radius * a.radius;
@@ -392,13 +402,14 @@ template <std::size_t Dim, class T>
 }
 
 // template <std::size_t Dim, class T>
-// [[nodiscard]] constexpr bool intersects(BS<Dim, T> const& a, Triangle<Dim, T> const& b)
+// [[nodiscard]] constexpr bool intersects(Sphere<Dim, T> const& a, Triangle<Dim, T>
+// const& b)
 // {
 // 	// TODO: Implement
 // }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool intersects(BS<Dim, T> const& a, Vec<Dim, T> const& b)
+[[nodiscard]] constexpr bool intersects(Sphere<Dim, T> const& a, Vec<Dim, T> const& b)
 {
 	return normSquared(b - a.center) <= (a.radius * a.radius);
 }
@@ -416,7 +427,7 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool intersects(Capsule<Dim, T> const& a, BS<Dim, T> const& b)
+[[nodiscard]] constexpr bool intersects(Capsule<Dim, T> const& a, Sphere<Dim, T> const& b)
 {
 	return intersects(b, a);
 }
@@ -485,7 +496,7 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool intersects(Frustum<Dim, T> const& a, BS<Dim, T> const& b)
+[[nodiscard]] constexpr bool intersects(Frustum<Dim, T> const& a, Sphere<Dim, T> const& b)
 {
 	return intersects(b, a);
 }
@@ -565,7 +576,8 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool intersects(LineSegment<Dim, T> const& a, BS<Dim, T> const& b)
+[[nodiscard]] constexpr bool intersects(LineSegment<Dim, T> const& a,
+                                        Sphere<Dim, T> const&      b)
 {
 	return intersects(b, a);
 }
@@ -741,7 +753,7 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool intersects(OBB<Dim, T> const& a, BS<Dim, T> const& b)
+[[nodiscard]] constexpr bool intersects(OBB<Dim, T> const& a, Sphere<Dim, T> const& b)
 {
 	return intersects(b, a);
 }
@@ -904,7 +916,7 @@ template <class T>
 }
 
 template <class T>
-[[nodiscard]] constexpr bool intersects(Plane<T> const& a, BS<3, T> const& b)
+[[nodiscard]] constexpr bool intersects(Plane<T> const& a, Sphere<3, T> const& b)
 {
 	return intersects(b, a);
 }
@@ -980,7 +992,7 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool intersects(Ray<Dim, T> const& a, BS<Dim, T> const& b)
+[[nodiscard]] constexpr bool intersects(Ray<Dim, T> const& a, Sphere<Dim, T> const& b)
 {
 	return intersects(b, a);
 }
@@ -1052,7 +1064,8 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool intersects(Triangle<Dim, T> const& a, BS<Dim, T> const& b)
+[[nodiscard]] constexpr bool intersects(Triangle<Dim, T> const& a,
+                                        Sphere<Dim, T> const&   b)
 {
 	return intersects(b, a);
 }
@@ -1123,7 +1136,7 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr bool intersects(Vec<Dim, T> const& a, BS<Dim, T> const& b)
+[[nodiscard]] constexpr bool intersects(Vec<Dim, T> const& a, Sphere<Dim, T> const& b)
 {
 	return intersects(b, a);
 }

@@ -43,15 +43,15 @@
 #define UFO_GEOMETRY_FUN_HPP
 
 // UFO
+#include <ufo/geometry/aabb.hpp>
+#include <ufo/geometry/capsule.hpp>
 #include <ufo/geometry/frustum.hpp>
-#include <ufo/geometry/shape/aabb.hpp>
-#include <ufo/geometry/shape/bs.hpp>
-#include <ufo/geometry/shape/capsule.hpp>
-#include <ufo/geometry/shape/line_segment.hpp>
-#include <ufo/geometry/shape/obb.hpp>
-#include <ufo/geometry/shape/plane.hpp>
-#include <ufo/geometry/shape/ray.hpp>
-#include <ufo/geometry/shape/triangle.hpp>
+#include <ufo/geometry/line_segment.hpp>
+#include <ufo/geometry/obb.hpp>
+#include <ufo/geometry/plane.hpp>
+#include <ufo/geometry/ray.hpp>
+#include <ufo/geometry/sphere.hpp>
+#include <ufo/geometry/triangle.hpp>
 #include <ufo/math/math.hpp>
 #include <ufo/math/vec.hpp>
 
@@ -76,7 +76,7 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr Vec<Dim, T> min(BS<Dim, T> const& a)
+[[nodiscard]] constexpr Vec<Dim, T> min(Sphere<Dim, T> const& a)
 {
 	return a.center - a.radius;
 }
@@ -152,7 +152,7 @@ template <std::size_t Dim, class T>
 }
 
 template <std::size_t Dim, class T>
-[[nodiscard]] constexpr Vec<Dim, T> max(BS<Dim, T> const& a)
+[[nodiscard]] constexpr Vec<Dim, T> max(Sphere<Dim, T> const& a)
 {
 	return a.center + a.radius;
 }

@@ -43,13 +43,17 @@
 #define UFO_GEOMETRY_HELPER_HPP
 
 // UFO
+#include <ufo/geometry/aabb.hpp>
 #include <ufo/geometry/fun.hpp>
-#include <ufo/geometry/shape/aabb.hpp>
-#include <ufo/geometry/shape/bs.hpp>
-#include <ufo/geometry/shape/line_segment.hpp>
-#include <ufo/geometry/shape/obb.hpp>
-#include <ufo/geometry/shape/plane.hpp>
-#include <ufo/geometry/shape/ray.hpp>
+#include <ufo/geometry/line_segment.hpp>
+#include <ufo/geometry/obb.hpp>
+#include <ufo/geometry/plane.hpp>
+#include <ufo/geometry/ray.hpp>
+#include <ufo/geometry/sphere.hpp>
+
+// STL
+#include <algorithm>
+#include <cmath>
 
 namespace ufo::detail
 {
@@ -59,17 +63,17 @@ namespace ufo::detail
 
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool intersectsLine(AABB<Dim, T> const& aabb,
-                                            Ray<Dim, T> const& ray, float t_near,
-                                            float t_far) noexcept
+                                            Ray<Dim, T> const& ray, T t_near,
+                                            T t_far) noexcept
 {
 	auto min = ufo::min(aabb);
 	auto max = ufo::max(aabb);
 
-	for (std::size_t i{}; 3 > i; ++i) {
-		if (0 != ray.direction[i]) {
-			float reciprocal_direction = 1.0f / ray.direction[i];
-			float t1                   = (min[i] - ray.origin[i]) * reciprocal_direction;
-			float t2                   = (max[i] - ray.origin[i]) * reciprocal_direction;
+	for (std::size_t i{}; Dim > i; ++i) {
+		if (T(0) != ray.direction[i]) {
+			T reciprocal_direction = T(1) / ray.direction[i];
+			T t1                   = (min[i] - ray.origin[i]) * reciprocal_direction;
+			T t2                   = (max[i] - ray.origin[i]) * reciprocal_direction;
 
 			if (t1 < t2) {
 				t_near = std::max(t1, t_near);
@@ -123,19 +127,22 @@ template <std::size_t Dim, class T>
 // Classify
 //
 
-// constexpr float classify(AABB const& aabb, Plane const& plane) noexcept
-// {
-// 	float r = std::abs(aabb.half_size.x * plane.normal.x) +
-// 	          std::abs(aabb.half_size.y * plane.normal.y) +
-// 	          std::abs(aabb.half_size.z * plane.normal.z);
-// 	float d = Point::dot(plane.normal, aabb.center) + plane.distance;
-// 	if (std::abs(d) < r) {
-// 		return 0;
-// 	} else if (d < 0) {
-// 		return d + r;
-// 	}
-// 	return d - r;
-// }
+template <class T>
+[[nodiscard]] constexpr T classify(AABB<3, T> const& aabb, Plane<T> const& plane) noexcept
+{
+	auto hl = aabb.halfLength();
+	auto c  = aabb.center();
+
+	T r = std::abs(hl.x * plane.normal.x) + std::abs(hl.y * plane.normal.y) +
+	      std::abs(hl.z * plane.normal.z);
+	T d = ufo::dot(plane.normal, c) + plane.distance;
+	if (std::abs(d) < r) {
+		return T(0);
+	} else if (T(0) > d) {
+		return d + r;
+	}
+	return d - r;
+}
 
 // constexpr float classify(AABC aabc, Plane const& plane) noexcept
 // {

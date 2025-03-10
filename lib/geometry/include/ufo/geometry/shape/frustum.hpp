@@ -43,7 +43,7 @@
 #define UFO_GEOMETRY_SHAPE_FRUSTUM_HPP
 
 // UFO
-#include <ufo/geometry/shape/plane.hpp>
+#include <ufo/geometry/plane.hpp>
 #include <ufo/math/vec.hpp>
 
 // STL
