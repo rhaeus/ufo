@@ -6,34 +6,28 @@
 
 // STL
 #include <cstddef>
-#include <memory>
+#include <cstdint>
 
 namespace ufo
 {
-// Forward declare
-template <std::size_t, class>
-struct PlanNode;
-
 template <std::size_t Dim, class T>
 struct PlanEdge {
-	std::shared_ptr<PlanNode<Dim, T>> from;
-	std::shared_ptr<PlanNode<Dim, T>> to;
-	T                                 cost{};
-	T                                 distance{};
+	T cost{};
+	T distance{};
+
+	std::uint32_t start;
+	std::uint32_t end;
 
 	PlanEdge() = default;
 
-	PlanEdge(std::shared_ptr<PlanNode<Dim, T>> const& from,
-	         std::shared_ptr<PlanNode<Dim, T>> const& to, T const& cost)
-	    : from(from), to(to), cost(cost), distance(ufo::distance(*from, *to))
+	PlanEdge(unsigned from, unsigned to, T const& cost, T const& distance)
+	    : from_(from), to_(to), cost(cost), distance(distance)
 	{
 	}
 
-	PlanEdge(std::shared_ptr<PlanNode<Dim, T>> const& from,
-	         std::shared_ptr<PlanNode<Dim, T>> const& to, T const& cost, T const& distance)
-	    : from(from), to(to), cost(cost), distance(distance)
-	{
-	}
+ private:
+	unsigned from_;
+	unsigned to_;
 };
 }  // namespace ufo
 

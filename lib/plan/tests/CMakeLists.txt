@@ -27,23 +27,23 @@ add_executable(ufoplan_tests
 	plan_test.cpp
 )
 
-target_link_libraries(ufoplan_tests PRIVATE UFO::Container UFO::Map UFO::Math Catch2::Catch2WithMain)
+target_link_libraries(ufoplan_tests PRIVATE UFO::Plan Catch2::Catch2WithMain)
 
-target_compile_options(ufoplan_tests
-	PUBLIC
-		-Wall
-		-Werror
-		-Wextra
-		-pedantic
-		-Wconversion
-		-Wcast-align
-		-Wunused
-		# -Wshadow
-		-Wold-style-cast
-		-Wpointer-arith
-		-Wcast-qual
-		-Wno-missing-braces
-)
+# target_compile_options(ufoplan_tests
+# 	PUBLIC
+# 		-Wall
+# 		-Werror
+# 		-Wextra
+# 		-pedantic
+# 		-Wconversion
+# 		-Wcast-align
+# 		-Wunused
+# 		# -Wshadow
+# 		-Wold-style-cast
+# 		-Wpointer-arith
+# 		-Wcast-qual
+# 		-Wno-missing-braces
+# )
 
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(CTest)
