@@ -219,36 +219,38 @@ bool overlapOnAxis(AABB<Dim, T> const& a, OBB<Dim, T> const& b, Vec<Dim, T> cons
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool intersects(AABB<Dim, T> const& a, OBB<Dim, T> const& b)
 {
-	// TODO: Implement
 	using Point = Vec<Dim, T>;
 
-	std::array<Point, 4> test = {Point(1, 0),  // AABB axis 1
-	                             Point(0, 1),  // AABB axis 2
-	                             normalize(Point(b.half_length.x, 0)) * b.rotation,
-	                             normalize(Point(0, b.half_length.y)) * b.rotation};
+	if constexpr (2 == Dim) {
+		// TODO: Implement
 
-	return std::all_of(test.begin(), test.end(),
-	                   [&a, &b](auto const& t) { return overlapOnAxis(a, b, t); });
+		std::array<Point, 4> test = {Point(1, 0),  // AABB axis 1
+		                             Point(0, 1),  // AABB axis 2
+		                             normalize(Point(b.half_length.x, 0)) * b.rotation,
+		                             normalize(Point(0, b.half_length.y)) * b.rotation};
 
-	// std::array<float, 9> obb_rot_matrix = obb.rotation.rotMatrix();
+		return std::all_of(test.begin(), test.end(),
+		                   [&a, &b](auto const& t) { return overlapOnAxis(a, b, t); });
+	} else if constexpr (3 == Dim) {
+		std::array<float, 9> obb_rot_matrix = b.rotation.rotMatrix();
 
-	// std::array<Point, 15> test = {
-	//     Point(1, 0, 0),  // AABB axis 1
-	//     Point(0, 1, 0),  // AABB axis 2
-	//     Point(0, 0, 1),  // AABB axis 3
-	//     Point(obb_rot_matrix[0], obb_rot_matrix[1], obb_rot_matrix[2]),
-	//     Point(obb_rot_matrix[3], obb_rot_matrix[4], obb_rot_matrix[5]),
-	//     Point(obb_rot_matrix[6], obb_rot_matrix[7], obb_rot_matrix[8])};
+		std::array<Point, 15> test = {
+		    Point(1, 0, 0),  // AABB axis 1
+		    Point(0, 1, 0),  // AABB axis 2
+		    Point(0, 0, 1),  // AABB axis 3
+		    Point(obb_rot_matrix[0], obb_rot_matrix[1], obb_rot_matrix[2]),
+		    Point(obb_rot_matrix[3], obb_rot_matrix[4], obb_rot_matrix[5]),
+		    Point(obb_rot_matrix[6], obb_rot_matrix[7], obb_rot_matrix[8])};
 
-	// for (std::size_t i{}; 3 > i; ++i) {  // Fill out rest of axis
-	// 	test[6 + i * 3 + 0] = Point::cross(test[i], test[3]);
-	// 	test[6 + i * 3 + 1] = Point::cross(test[i], test[4]);
-	// 	test[6 + i * 3 + 2] = Point::cross(test[i], test[5]);
-	// }
+		for (std::size_t i{}; 3 > i; ++i) {  // Fill out rest of axis
+			test[6 + i * 3 + 0] = Point::cross(test[i], test[3]);
+			test[6 + i * 3 + 1] = Point::cross(test[i], test[4]);
+			test[6 + i * 3 + 2] = Point::cross(test[i], test[5]);
+		}
 
-	// return std::all_of(std::cbegin(test), std::cend(test), [&aabb, &obb](auto const& t) {
-	// 	return overlapOnAxis(aabb, obb, t);
-	// });
+		return std::all_of(std::cbegin(test), std::cend(test),
+		                   [&a, &b](auto const& t) { return overlapOnAxis(a, b, t); });
+	}
 }
 
 template <class T>
