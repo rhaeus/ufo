@@ -56,6 +56,7 @@
 #include <ufo/math/vec.hpp>
 
 // STL
+#include <algorithm>
 #include <cmath>
 
 namespace ufo
@@ -150,7 +151,7 @@ template <class A>
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool contains(AABB<Dim, T> const& a, AABB<Dim, T> const& b)
 {
-	return all(min(a) <= min(b) && max(b) <= max(a));
+	return all(lessThanEqual(min(a), min(b))) && all(lessThanEqual(max(b), max(a)));
 }
 
 template <std::size_t Dim, class T>
@@ -556,12 +557,8 @@ template <std::size_t Dim, class T>
 template <std::size_t Dim, class T>
 [[nodiscard]] constexpr bool contains(OBB<Dim, T> const& a, AABB<Dim, T> const& b)
 {
-	for (auto c : corners(b)) {
-		if (!contains(a, c)) {
-			return false;
-		}
-	}
-	return true;
+	auto c = corners(b);
+	return std::all_of(c.begin(), c.end(), [&a](auto const& c) { return contains(a, c); });
 }
 
 // template <std::size_t Dim, class T>
