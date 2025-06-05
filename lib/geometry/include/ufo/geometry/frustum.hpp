@@ -145,12 +145,12 @@ struct Frustum<3, T> {
 	                  Vec<3, T> const& near_top_right, Vec<3, T> const& near_top_left,
 	                  Vec<3, T> const& near_bottom_left, Vec<3, T> const& near_bottom_right)
 	{
-		top    = Plane(near_top_right, near_top_left, far_top_left);
-		bottom = Plane(near_bottom_left, near_bottom_right, far_bottom_right);
-		left   = Plane(near_top_left, near_bottom_left, far_bottom_left);
-		right  = Plane(near_bottom_right, near_top_right, far_bottom_right);
-		near   = Plane(near_top_left, near_top_right, near_bottom_right);
-		far    = Plane(far_top_right, far_top_left, far_bottom_left);
+		top    = Plane<T>(near_top_right, near_top_left, far_top_left);
+		bottom = Plane<T>(near_bottom_left, near_bottom_right, far_bottom_right);
+		left   = Plane<T>(near_top_left, near_bottom_left, far_bottom_left);
+		right  = Plane<T>(near_bottom_right, near_top_right, far_bottom_right);
+		near   = Plane<T>(near_top_left, near_top_right, near_bottom_right);
+		far    = Plane<T>(far_top_right, far_top_left, far_bottom_left);
 	}
 
 	constexpr Frustum(Vec<3, T> const& pos, Vec<3, T> const& target, Vec<3, T> const& up,
@@ -184,12 +184,12 @@ struct Frustum<3, T> {
 		auto far_bottom_left  = fc - Y * far_height - X * far_width;
 		auto far_bottom_right = fc - Y * far_height + X * far_width;
 
-		top    = Plane(near_top_right, near_top_left, far_top_left);
-		bottom = Plane(near_bottom_left, near_bottom_right, far_bottom_right);
-		left   = Plane(near_top_left, near_bottom_left, far_bottom_left);
-		right  = Plane(near_bottom_right, near_top_right, far_bottom_right);
-		near   = Plane(near_top_left, near_top_right, near_bottom_right);
-		far    = Plane(far_top_right, far_top_left, far_bottom_left);
+		top    = Plane<T>(near_top_right, near_top_left, far_top_left);
+		bottom = Plane<T>(near_bottom_left, near_bottom_right, far_bottom_right);
+		left   = Plane<T>(near_top_left, near_bottom_left, far_bottom_left);
+		right  = Plane<T>(near_bottom_right, near_top_right, far_bottom_right);
+		near   = Plane<T>(near_top_left, near_top_right, near_bottom_right);
+		far    = Plane<T>(far_top_right, far_top_left, far_bottom_left);
 	}
 
 	constexpr Frustum(Frustum const&) noexcept = default;
