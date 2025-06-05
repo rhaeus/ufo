@@ -55,14 +55,15 @@ struct Plane {
 	constexpr Plane() noexcept             = default;
 	constexpr Plane(Plane const&) noexcept = default;
 
-	constexpr explicit Plane(Vec<3, T> normal) noexcept : normal(normal) {}
+	constexpr explicit Plane(Vec<3, T> const& normal) noexcept : normal(normal) {}
 
-	constexpr Plane(Vec<3, T> normal, T distance) noexcept
+	constexpr Plane(Vec<3, T> const& normal, T distance) noexcept
 	    : normal(normal), distance(distance)
 	{
 	}
 
-	constexpr Plane(Vec<3, T> v_1, Vec<3, T> v_2, Vec<3, T> v_3) noexcept
+	constexpr Plane(Vec<3, T> const& v_1, Vec<3, T> const& v_2,
+	                Vec<3, T> const& v_3) noexcept
 	{
 		auto aux_1 = v_1 - v_2;
 		auto aux_2 = v_3 - v_2;
@@ -70,11 +71,7 @@ struct Plane {
 		distance   = -dot(normal, v_2);
 	}
 
-	template <class U>
-	constexpr explicit Plane(Plane<U> const& other) noexcept
-	    : normal(other.normal), distance(static_cast<T>(other.distance))
-	{
-	}
+	constexpr Plane& operator=(Plane const&) noexcept = default;
 };
 
 /*!
