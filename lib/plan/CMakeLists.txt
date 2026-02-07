@@ -2,6 +2,8 @@ option(UFOPLAN_BUILD_DOCS     "Generate documentation" OFF)
 option(UFOPLAN_BUILD_TESTS    "Unit testing"           OFF)
 option(UFOPLAN_BUILD_COVERAGE "Test Coverage"          OFF)
 
+include(GNUInstallDirs)
+
 add_library(Plan INTERFACE)
 add_library(UFO::Plan ALIAS Plan)
 
@@ -12,12 +14,10 @@ target_link_libraries(Plan
 		UFO::Math
 )
 
-include(GNUInstallDirs)
-
 target_include_directories(Plan 
 	INTERFACE
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-		$<INSTALL_INTERFACE:include>
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 if(UFO_BUILD_TESTS OR UFOPLAN_BUILD_TESTS)
@@ -28,43 +28,16 @@ if(UFO_BUILD_DOCS OR UFOPLAN_BUILD_DOCS)
 	add_subdirectory(docs)
 endif()
 
-install(TARGETS Plan EXPORT Plan-targets
+install(TARGETS Plan 
+	EXPORT UFO-targets
 	COMPONENT Plan
-	LIBRARY  DESTINATION lib
-	ARCHIVE  DESTINATION lib
-	RUNTIME  DESTINATION bin
-  INCLUDES DESTINATION include
+	LIBRARY  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME  DESTINATION ${CMAKE_INSTALL_BINDIR}
+  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-install(EXPORT Plan-targets
-  FILE "Plan-targets.cmake"
-  NAMESPACE UFO::
-  DESTINATION lib/cmake/${PROJECT_NAME}
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
 	COMPONENT Plan
-)
-
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-	"${CMAKE_CURRENT_BINARY_DIR}/Plan-config-version.cmake"
-	VERSION ${PROJECT_VERSION}
-	COMPATIBILITY SameMajorVersion
-)
-
-configure_package_config_file(
-	"${CMAKE_CURRENT_SOURCE_DIR}/cmake/Plan-config.cmake.in"
-	"${CMAKE_CURRENT_BINARY_DIR}/Plan-config.cmake"
-	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-)
-
-install(
-  FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/Plan-config.cmake"
-    "${CMAKE_CURRENT_BINARY_DIR}/Plan-config-version.cmake"
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-  COMPONENT Plan
-)
-
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include
-	COMPONENT Plan
-	DESTINATION ${CMAKE_INSTALL_PREFIX}
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )

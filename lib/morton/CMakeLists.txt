@@ -4,6 +4,8 @@ option(UFOMORTON_BUILD_COVERAGE "Test Coverage" OFF)
 
 option(UFOMORTON_BMI2 "Enable BMI2 instruction set (if available)" OFF)
 
+include(GNUInstallDirs)
+
 add_library(Morton INTERFACE)
 add_library(UFO::Morton ALIAS Morton)
 
@@ -39,12 +41,11 @@ if(UFOMORTON_BMI2)
 	cmake_pop_check_state()
 endif()
 
-include(GNUInstallDirs)
 
 target_include_directories(Morton
 	INTERFACE
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-		$<INSTALL_INTERFACE:include>
+		$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 
 if(UFO_BUILD_TESTS OR UFOMORTON_BUILD_TESTS)
@@ -55,43 +56,16 @@ if(UFO_BUILD_DOCS OR UFOMORTON_BUILD_DOCS)
 	add_subdirectory(docs)
 endif()
 
-install(TARGETS Morton EXPORT Morton-targets
+install(TARGETS Morton 
+	EXPORT UFO-targets
 	COMPONENT Morton
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
-	RUNTIME DESTINATION bin
-	INCLUDES DESTINATION include
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+	INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-install(EXPORT Morton-targets
-	FILE "Morton-targets.cmake"
-	NAMESPACE UFO::
-	DESTINATION lib/cmake/${PROJECT_NAME}
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
 	COMPONENT Morton
-)
-
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-	"${CMAKE_CURRENT_BINARY_DIR}/Morton-config-version.cmake"
-	VERSION ${PROJECT_VERSION}
-	COMPATIBILITY SameMajorVersion
-)
-
-configure_package_config_file(
-	"${CMAKE_CURRENT_SOURCE_DIR}/cmake/Morton-config.cmake.in"
-	"${CMAKE_CURRENT_BINARY_DIR}/Morton-config.cmake"
-	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-)
-
-install(
-	FILES
-	"${CMAKE_CURRENT_BINARY_DIR}/Morton-config.cmake"
-	"${CMAKE_CURRENT_BINARY_DIR}/Morton-config-version.cmake"
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-	COMPONENT Morton
-)
-
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include
-	COMPONENT Morton
-	DESTINATION ${CMAKE_INSTALL_PREFIX}
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )

@@ -1,96 +1,49 @@
-if(${UFO_SUPER_BUILD})
-	include(super.cmake)
-else()
-	cmake_minimum_required(VERSION 3.16...3.24)
+# --- ufo/utility/CMakeLists.txt ---
+include(GNUInstallDirs)
 
-	if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR AND NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-		set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
-		set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
-	endif()
+# 1. Define the library
+# Note: Since it has .cpp files, it's SHARED/STATIC (usually STATIC in monorepos)
+add_library(Utility STATIC 
+    src/io/read_buffer.cpp
+    src/io/write_buffer.cpp
+    src/io/buffer.cpp
+)
+add_library(UFO::Utility ALIAS Utility)
 
-	project(ufoutility
-		VERSION 1.0.0
-		DESCRIPTION "The UFO utility library"
-		LANGUAGES CXX
-	)
+# 2. Dependencies
+find_package(TBB) #should ideally be in the root Dependencies.cmake
+# but we link it here.
+target_link_libraries(Utility PUBLIC TBB::tbb)
 
-	add_subdirectory(3rdparty)
+target_compile_definitions(Utility
+    PUBLIC
+        UFO_TBB=1
+)
 
-	add_library(Utility SHARED 
-		src/io/read_buffer.cpp
-		src/io/write_buffer.cpp
-		src/io/buffer.cpp
-	)
-	add_library(UFO::Utility ALIAS Utility)
+# 3. Standard and Properties
+# You can keep these if this lib has unique requirements, 
+# but usually CXX_STANDARD is set globally at the root.
+set_target_properties(Utility PROPERTIES
+    VERSION ${PROJECT_VERSION}
+    SOVERSION ${PROJECT_VERSION_MAJOR}
+)
 
-	# include("${PROJECT_SOURCE_DIR}/3rdparty/tbb/tbb.cmake")
-	find_package(TBB REQUIRED)
+# 4. Include Directories
+# Use the "Hall of Mirrors" fix: point directly to your include folder
+target_include_directories(Utility 
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
 
-	# find_package(OpenMP)
-	# if(OpenMP_CXX_FOUND)
-	#     target_link_libraries(Utility PUBLIC OpenMP::OpenMP_CXX)
-	# 		target_compile_definitions(Utility
-	# 			PUBLIC
-	# 				UFO_OMP=1
-	# 		)
-	# endif()
+# 5. Global Install (Simplified)
+# We add this target to the shared 'UFO-targets' export set
+install(TARGETS Utility 
+	EXPORT UFO-targets
+    COMPONENT Utility
+)
 
-	target_link_libraries(Utility PUBLIC TBB::tbb)
-
-	target_compile_definitions(Utility
-		PUBLIC
-			UFO_TBB=1
-	)
-
-	set_target_properties(Utility PROPERTIES
-		VERSION ${PROJECT_VERSION}
-		SOVERSION ${PROJECT_VERSION_MAJOR}
-		CXX_STANDARD 17
-		CXX_EXTENSIONS OFF
-	)
-
-	include(GNUInstallDirs)
-
-	target_include_directories(Utility 
-		PUBLIC
-			$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-			$<INSTALL_INTERFACE:include>
-	)
-
-	install(TARGETS Utility EXPORT ufoutility-targets
-		LIBRARY  DESTINATION lib
-		ARCHIVE  DESTINATION lib
-		RUNTIME  DESTINATION bin
-		INCLUDES DESTINATION include
-	)
-
-	install(EXPORT ufoutility-targets
-		FILE "ufoutility-targets.cmake"
-		NAMESPACE UFO::
-		DESTINATION lib/cmake/${PROJECT_NAME}
-	)
-
-	include(CMakePackageConfigHelpers)
-	write_basic_package_version_file(
-		"${CMAKE_CURRENT_BINARY_DIR}/ufoutility-config-version.cmake"
-		VERSION ${PROJECT_VERSION}
-		COMPATIBILITY SameMajorVersion
-	)
-
-	configure_package_config_file(
-		"${CMAKE_CURRENT_SOURCE_DIR}/cmake/ufoutility-config.cmake.in"
-		"${CMAKE_CURRENT_BINARY_DIR}/ufoutility-config.cmake"
-		INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-	)
-
-	install(
-		FILES
-			"${CMAKE_CURRENT_BINARY_DIR}/ufoutility-config.cmake"
-			"${CMAKE_CURRENT_BINARY_DIR}/ufoutility-config-version.cmake"
-		DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-	)
-
-	install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include
-		DESTINATION ${CMAKE_INSTALL_PREFIX}
-	)
-endif()
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+    COMPONENT Utility
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)

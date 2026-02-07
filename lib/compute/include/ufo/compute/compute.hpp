@@ -42,7 +42,7 @@
 #ifndef UFO_COMPUTE_COMPUTE_HPP
 #define UFO_COMPUTE_COMPUTE_HPP
 
-#define UFO_WEBGPU
+// #define UFO_WEBGPU
 
 // STL
 #include <filesystem>
