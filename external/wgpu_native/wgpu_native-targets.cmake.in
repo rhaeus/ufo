@@ -1,0 +1,13 @@
+# This file recreates the wgpu_native imported target for consumers of the
+# installed UFO package. It is included automatically by ufo-config.cmake.
+# Do not include this file directly.
+
+if(TARGET wgpu_native)
+	return()
+endif()
+
+add_library(wgpu_native STATIC IMPORTED GLOBAL)
+
+set_target_properties(wgpu_native PROPERTIES
+	IMPORTED_LOCATION                "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_LIBDIR@/@STATIC_LIB_PREFIX@wgpu_native.@STATIC_LIB_EXT@"
+)
