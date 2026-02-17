@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   # Trigger the workflow every time you push to the `main` branch
-  # Using a different branch name? Replace `main` with your branch's name
+  # Using a different branch name? Replace `main` with your branch’s name
   push:
     branches: [ main ]
   # Allows you to run this workflow manually from the Actions tab on GitHub.
@@ -27,27 +27,15 @@ jobs:
       - name: Checkout your repository using git
         uses: actions/checkout@v5
 
-      - name: Install Doxygen
-        run: sudo apt-get update && sudo apt-get install -y doxygen
+      - name: Install Doxygen and Graphviz
+        run: sudo apt update && sudo apt install -y doxygen graphviz
 
-      - name: Generate Doxygen XML
+      - name: Generate Doxygen API documentation
         run: |
           cmake -B build -DUFO_BUILD_DOCS=ON
           cmake --build build --target Docs
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
-      - name: Build Sphinx site
-        run: |
-          pip install -r docs/api/requirements.txt
-          sphinx-build docs/api build/docs/sphinx -Dbreathe_projects.UFO=build/docs/xml
-
-      - name: Copy Sphinx output into Astro public
-        run: cp -r build/docs/sphinx docs/public/cpp_api
-
+          cp -r build/docs/html docs/public/cpp_api
+          
       - name: Install, build, and upload your site
         uses: withastro/action@v5
         with:
@@ -55,6 +43,8 @@ jobs:
           # node-version: 24 # The specific version of Node that should be used to build your site. Defaults to 22. (optional)
           # package-manager: pnpm@latest # The Node package manager that should be used to install dependencies and build your site. Automatically detected based on your lockfile. (optional)
           # build-cmd: pnpm run build # The command to run to build your site. Runs the package build script/task by default. (optional)
+        # env:
+          # PUBLIC_POKEAPI: 'https://pokeapi.co/api/v2' # Use single quotation marks for the variable value. (optional)
 
   deploy:
     needs: build

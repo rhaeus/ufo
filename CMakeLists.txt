@@ -69,7 +69,13 @@ target_link_libraries(ufo INTERFACE
 )
 
 if(UFO_BUILD_DOCS)
-    find_package(Doxygen REQUIRED)
+    find_package(Doxygen REQUIRED OPTIONAL_COMPONENTS dot)
+
+    if(DOXYGEN_DOT_FOUND)
+        set(DOXYGEN_HAVE_DOT YES)
+    else()
+        set(DOXYGEN_HAVE_DOT NO)
+    endif()
 
     set(DOXYGEN_OUTPUT_DIR "${PROJECT_BINARY_DIR}/docs")
 
@@ -82,7 +88,7 @@ if(UFO_BUILD_DOCS)
     add_custom_target(Docs
         COMMAND "${DOXYGEN_EXECUTABLE}" "${PROJECT_BINARY_DIR}/Doxyfile"
         WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
-        COMMENT "Generating Doxygen XML for Sphinx/Breathe"
+        COMMENT "Generating API documentation with Doxygen"
         VERBATIM
     )
 endif()
