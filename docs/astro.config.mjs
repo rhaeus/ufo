@@ -80,7 +80,7 @@ export default defineConfig({
 					},
 					items: [
 						// Each item here is one entry in the navigation menu.
-						{ label: 'C++ API', link: '/api/' },
+						{ label: 'C++ API', link: 'https://unknownfreeoccupied.github.io/ufo/cpp_api/' },
 					]
 				},
 			],
