@@ -18,7 +18,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(USE_SYSTEM_CATCH2 "Use system-installed Catch2 instead of fetching/building it" OFF)
 option(USE_SYSTEM_CLI11 "Use system-installed CLI11 instead of fetching/building it" OFF)
-option(USE_SYSTEM_DOXYGEN "Use system-installed Doxygen instead of fetching/building it" OFF)
 option(USE_SYSTEM_IMGUI "Use system-installed ImGUI instead of fetching/building it" OFF)
 option(USE_SYSTEM_JPEG "Use system-installed libjpeg-turbo instead of fetching/building it" OFF)
 option(USE_SYSTEM_SPNG "Use system-installed libspng instead of fetching/building it" OFF)
@@ -68,6 +67,38 @@ target_link_libraries(ufo INTERFACE
     UFO::Vision
     # UFO::Viz
 )
+
+if(UFO_BUILD_DOCS)
+    set(DOXYGEN_PROJECT_NAME "UFO")
+    set(DOXYGEN_PROJECT_NUMBER ${PROJECT_VERSION})
+    set(DOXYGEN_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/docs")
+    set(DOXYGEN_EXTRACT_ALL YES)
+    set(DOXYGEN_BUILTIN_STL_SUPPORT YES)
+    set(DOXYGEN_COLLABORATION_GRAPH YES)
+    set(DOXYGEN_CLASS_DIAGRAMS YES)
+    set(DOXYGEN_CLASS_GRAPH YES)
+    set(DOXYGEN_HAVE_DOT YES)
+    set(DOXYGEN_DOT_TRANSPARENT YES)
+    set(DOXYGEN_TEMPLATE_RELATIONS YES)
+
+    doxygen_add_docs(
+        Docs
+        lib/cloud/include
+        lib/compute/include
+        lib/container/include
+        lib/core/include
+        lib/execution/include
+        lib/geometry/include
+        lib/map/include
+        lib/math/include
+        lib/morton/include
+        lib/plan/include
+        lib/time/include
+        lib/utility/include
+        lib/vision/include
+        COMMENT "Generating API documentation with Doxygen"
+    )
+endif()
 
 if(UFO_BUILD_EXAMPLES)
     add_subdirectory(examples)

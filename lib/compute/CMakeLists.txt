@@ -1,4 +1,3 @@
-option(UFO_COMPUTE_BUILD_DOCS "Generate documentation" ON)
 option(UFO_COMPUTE_BUILD_TESTS "Unit testing" ON)
 option(UFO_COMPUTE_BUILD_COVERAGE "Test Coverage" ON)
 
@@ -48,9 +47,6 @@ if(UFO_BUILD_TESTS AND UFO_COMPUTE_BUILD_TESTS)
 	add_subdirectory(tests)
 endif()
 
-if(UFO_BUILD_DOCS AND UFO_COMPUTE_BUILD_DOCS)
-	add_subdirectory(docs)
-endif()
 
 # We add this target to the shared 'UFO-targets' export set
 install(TARGETS Compute 

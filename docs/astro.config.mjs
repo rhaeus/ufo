@@ -78,7 +78,10 @@ export default defineConfig({
 					translations: {
 						'sv-SE': 'Referens',
 					},
-					autogenerate: { directory: 'reference' },
+					items: [
+						// Each item here is one entry in the navigation menu.
+						{ label: 'C++ API', link: '/api/' },
+					]
 				},
 			],
 			// Set English as the default language for this site.

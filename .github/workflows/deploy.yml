@@ -26,6 +26,16 @@ jobs:
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v5
+
+      - name: Install Doxygen and Graphviz
+        run: sudo apt update && sudo apt install -y doxygen graphviz
+
+      - name: Generate Doxygen API documentation
+        run: |
+          cmake -B build -DUFO_BUILD_DOCS=ON
+          cmake --build build --target Docs
+          cp -r build/docs/html docs/public/api
+          
       - name: Install, build, and upload your site
         uses: withastro/action@v5
         with:

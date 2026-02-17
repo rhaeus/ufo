@@ -1,4 +1,3 @@
-option(UFO_TIME_BUILD_DOCS     "Generate documentation" ON)
 option(UFO_TIME_BUILD_TESTS    "Unit testing"           ON)
 option(UFO_TIME_BUILD_COVERAGE "Test Coverage"          ON)
 
@@ -36,9 +35,6 @@ if(UFO_BUILD_TESTS AND UFO_TIME_BUILD_TESTS)
   add_subdirectory(tests)
 endif()
 
-if(UFO_BUILD_DOCS AND UFO_TIME_BUILD_DOCS)
-	add_subdirectory(docs)
-endif()
 
 install(TARGETS Time 
 	EXPORT UFO-targets
