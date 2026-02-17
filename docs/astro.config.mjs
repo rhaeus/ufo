@@ -62,7 +62,7 @@ export default defineConfig({
 					},
 					items: [
 						// Each item here is one entry in the navigation menu.
-						'guides/example',
+						'guides/host_website',
 					],
 				},
 				{
