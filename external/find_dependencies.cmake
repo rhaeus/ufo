@@ -32,7 +32,7 @@ endif()
 
 # Doxygen
 if(UFO_BUILD_DOCS)
-	find_package(Doxygen REQUIRED)
+	find_package(Doxygen REQUIRED dot)
 endif()
 
 # ImGUI
