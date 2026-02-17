@@ -37,6 +37,14 @@ export default defineConfig({
 					],
 				},
 				{
+					label: 'Components',
+					translations: {
+						'sv-SE': 'Komponenter',
+					},
+					autogenerate: { directory: 'components' },
+					collapsed: true,
+				},
+				{
 					label: 'Tutorials',
 					translations: {
 						'sv-SE': 'Handledningar',
