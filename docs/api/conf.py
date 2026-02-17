@@ -1,14 +1,13 @@
 project = "UFO"
 author = "Daniel Duberg"
-copyright = "2026, Daniel Duberg"
+copyright = "2025, Daniel Duberg"
 
 extensions = ["breathe"]
 
 # -- Breathe configuration ---------------------------------------------------
 
-breathe_projects = {"UFO": "../../../build/docs/xml"}
+breathe_projects = {"UFO": "../../build/docs/xml"}
 breathe_default_project = "UFO"
-breathe_default_members = ("members", "undoc-members")
 
 # -- HTML output -------------------------------------------------------------
 
@@ -24,5 +23,4 @@ html_theme_options = {
         "color-brand-primary": "#82b1ff",
         "color-brand-content": "#82b1ff",
     },
-    "navigation_with_keys": True,
 }

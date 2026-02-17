@@ -42,8 +42,8 @@ jobs:
 
       - name: Build Sphinx site
         run: |
-          pip install -r docs/api/cpp/requirements.txt
-          sphinx-build docs/api/cpp build/docs/sphinx -Dbreathe_projects.UFO=${{ github.workspace }}/build/docs/xml
+          pip install -r docs/api/requirements.txt
+          sphinx-build docs/api build/docs/sphinx -Dbreathe_projects.UFO=${{ github.workspace }}/build/docs/xml
 
       - name: Copy Sphinx output into Astro public
         run: cp -r build/docs/sphinx docs/public/cpp_api
