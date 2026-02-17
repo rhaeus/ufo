@@ -69,34 +69,27 @@ target_link_libraries(ufo INTERFACE
 )
 
 if(UFO_BUILD_DOCS)
-    set(DOXYGEN_PROJECT_NAME "UFO")
-    set(DOXYGEN_PROJECT_NUMBER ${PROJECT_VERSION})
-    set(DOXYGEN_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/docs")
-    set(DOXYGEN_EXTRACT_ALL YES)
-    set(DOXYGEN_BUILTIN_STL_SUPPORT YES)
-    set(DOXYGEN_COLLABORATION_GRAPH YES)
-    set(DOXYGEN_CLASS_DIAGRAMS YES)
-    set(DOXYGEN_CLASS_GRAPH YES)
-    set(DOXYGEN_HAVE_DOT YES)
-    set(DOXYGEN_DOT_TRANSPARENT YES)
-    set(DOXYGEN_TEMPLATE_RELATIONS YES)
+    find_package(Doxygen REQUIRED OPTIONAL_COMPONENTS dot)
 
-    doxygen_add_docs(
-        Docs
-        lib/cloud/include
-        lib/compute/include
-        lib/container/include
-        lib/core/include
-        lib/execution/include
-        lib/geometry/include
-        lib/map/include
-        lib/math/include
-        lib/morton/include
-        lib/plan/include
-        lib/time/include
-        lib/utility/include
-        lib/vision/include
+    if(DOXYGEN_DOT_FOUND)
+        set(DOXYGEN_HAVE_DOT YES)
+    else()
+        set(DOXYGEN_HAVE_DOT NO)
+    endif()
+
+    set(DOXYGEN_OUTPUT_DIR "${PROJECT_BINARY_DIR}/docs")
+
+    configure_file(
+        "${PROJECT_SOURCE_DIR}/Doxyfile.in"
+        "${PROJECT_BINARY_DIR}/Doxyfile"
+        @ONLY
+    )
+
+    add_custom_target(Docs
+        COMMAND "${DOXYGEN_EXECUTABLE}" "${PROJECT_BINARY_DIR}/Doxyfile"
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
         COMMENT "Generating API documentation with Doxygen"
+        VERBATIM
     )
 endif()
 
