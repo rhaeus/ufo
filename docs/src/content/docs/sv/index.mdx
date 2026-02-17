@@ -1,40 +1,39 @@
 ---
-title: Welcome to UFO
-description: Get started building your robotics projects with UFO.
+title: Välkommen till UFO
+description: Kom igång med att bygga dina robotprojekt med UFO.
 template: splash # Remove or comment out this line to display the site sidebar on this page.
 hero:
-  tagline: Congrats on setting up a new UFO project!
+  tagline: Grattis till att ha startat ett nytt UFO-projekt!
   image:
     file: ../../../assets/ufo.png
   actions:
-    - text: Get Started
+    - text: Kom igång
       link: start_here/getting_started/
       icon: right-arrow
-    - text: Read the UFO docs
-      link: https://starlight.astro.build
+    - text: Läs UFO-dokumenten
+      link: https://github.com/UnknownFreeOccupied/ufo
       icon: external
       variant: minimal
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Next steps
+## Nästa steg
 
 <CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
+	<Card title="Uppdatera innehåll" icon="pencil">
+		Ändra `src/content/docs/index.mdx` för att se den här sidan ändras.
 	</Card>
-	<Card title="Change page layout" icon="document">
-		Delete `template: splash` in `src/content/docs/index.mdx` to display a
-		sidebar on this page.
+	<Card title="Ändra sidlayout" icon="document">
+		Ta bort `template: splash` i `src/content/docs/index.mdx` för att visa en sidofält på den här sidan.
 	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
+	<Card title="Lägg till nytt innehåll" icon="add-document">
+		Lägg till Markdown- eller MDX-filer till `src/content/docs` för att skapa nya sidor.
 	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
+	<Card title="Konfigurera din webbplats" icon="setting">
+		Redigera din `sidebar` och annan konfiguration i `astro.config.mjs`.
 	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+	<Card title="Läs dokumentationen" icon="open-book">
+		Läs mer i [Starlight-dokumentationen](https://starlight.astro.build/).
 	</Card>
 </CardGrid>
