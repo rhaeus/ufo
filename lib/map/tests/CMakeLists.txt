@@ -7,6 +7,7 @@ target_sources(MapTests
 		occupancy_map_test.cpp
 		# labels_map_test.cpp
 		label_map_test.cpp
+		semantic_map_test.cpp
 )
 
 set_target_properties(MapTests
