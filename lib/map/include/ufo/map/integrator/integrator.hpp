@@ -52,6 +52,7 @@
 #include <ufo/map/color/map.hpp>
 #include <ufo/map/occupancy/map.hpp>
 // #include <ufo/map/time/map.hpp>
+#include <ufo/core/semantic.hpp>
 #include <ufo/map/integrator/count_sampling_method.hpp>
 #include <ufo/map/integrator/detail/bool_grid.hpp>
 #include <ufo/map/integrator/detail/count_grid.hpp>
@@ -74,6 +75,8 @@
 namespace ufo
 {
 enum class DownSamplingMethod { NONE, FIRST, CENTER };
+
+enum class SemanticUpdateMethod { KEEP_LATEST, KEEP_MAX_VALUE };
 
 template <std::size_t Dim>
 class Integrator
@@ -110,8 +113,11 @@ class Integrator
 	// A single miss in a void region will set the occupancy to min
 	bool void_region_instant_min_occupancy = true;
 
-	// Label to be ignored when updating LabelMap
+	// Label to be ignored when updating LabelMap or SemanticMap
 	std::uint32_t ignore_label = 0;
+
+	// Semantic
+	SemanticUpdateMethod semantic_update_method = SemanticUpdateMethod::KEEP_MAX_VALUE;
 
 	bool propagate      = false;
 	bool prune          = true;
@@ -166,6 +172,26 @@ class Integrator
 			auto l = data.template get<Label>();
 			if (l.label != ignore_label) {
 				map.labelSet(node, l.label, false);
+			}
+		}
+
+		if constexpr (Map::hasMapTypes(MapType::SEMANTIC)) {
+			auto s = data.template get<Semantic>();
+			if (s.label != ignore_label) {
+				auto current = map.semantic(node);
+
+				switch (semantic_update_method) {
+					case SemanticUpdateMethod::KEEP_LATEST: {
+						map.semanticSet(node, s, false);
+						break;
+					}
+					case SemanticUpdateMethod::KEEP_MAX_VALUE: {
+						if (current.value < s.value) {
+							map.semanticSet(node, s, false);
+						}
+						break;
+					}
+				}
 			}
 		}
 

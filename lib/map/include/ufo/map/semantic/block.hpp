@@ -38,62 +38,69 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-#ifndef UFO_MAP_SEMANTIC_HPP
-#define UFO_MAP_SEMANTIC_HPP
+#ifndef UFO_MAP_SEMANTIC_BLOCK_HPP
+#define UFO_MAP_SEMANTIC_BLOCK_HPP
 
 // UFO
-#include <ufo/container/range.hpp>
-#include <ufo/container/range_map.hpp>
-#include <ufo/container/range_set.hpp>
-#include <ufo/map/types.hpp>
+#include <ufo/core/semantic.hpp>
+#include <ufo/utility/create_array.hpp>
 
 // STL
-#include <ostream>
+#include <array>
+#include <cassert>
+#include <cstddef>
 
 namespace ufo
 {
-using SemanticRange    = Range<label_t>;
-using SemanticRangeSet = RangeSet<label_t>;
-using SemanticRangeMap = RangeMap<label_t, value_t>;
+struct SemanticElement {
+	Semantic semantic{};
 
-struct Semantic {
-	label_t label = 0;
-	value_t value = 0;
+	SemanticElement() noexcept                       = default;
+	SemanticElement(SemanticElement const&) noexcept = default;
 
-	constexpr Semantic() noexcept = default;
+	SemanticElement(Semantic semantic) noexcept : semantic(semantic) {}
 
-	constexpr Semantic(label_t label, value_t value = 0) noexcept
-	    : label(label), value(value)
+	SemanticElement& operator=(SemanticElement const&) noexcept = default;
+
+	friend constexpr bool operator==(SemanticElement const& lhs, SemanticElement const& rhs)
 	{
+		return lhs.semantic == rhs.semantic;
 	}
+
+	friend constexpr bool operator!=(SemanticElement const& lhs, SemanticElement const& rhs)
+	{
+		return !(lhs == rhs);
+	};
 };
 
-constexpr bool operator==(Semantic lhs, Semantic rhs)
-{
-	return lhs.label == rhs.label && lhs.value == rhs.value;
-}
+template <std::size_t BF>
+struct SemanticBlock {
+	std::array<SemanticElement, BF> data;
 
-constexpr bool operator!=(Semantic lhs, Semantic rhs) { return !(lhs == rhs); }
+	constexpr SemanticBlock() = default;
 
-constexpr bool operator<(Semantic lhs, Semantic rhs)
-{
-	return lhs.label < rhs.label || (lhs.label == rhs.label && lhs.value < rhs.value);
-}
+	constexpr SemanticBlock(Semantic semantic)
+	    : data(createArray<BF>(SemanticElement(semantic)))
+	{
+	}
 
-constexpr bool operator<=(Semantic lhs, Semantic rhs) { return !(rhs < lhs); }
+	constexpr SemanticBlock(SemanticElement const& parent) : data(createArray<BF>(parent))
+	{
+	}
 
-constexpr bool operator>(Semantic lhs, Semantic rhs) { return rhs < lhs; }
+	constexpr void fill(SemanticElement const& parent) { data.fill(parent); }
 
-constexpr bool operator>=(Semantic lhs, Semantic rhs) { return !(lhs < rhs); }
+	[[nodiscard]] constexpr SemanticElement& operator[](std::size_t pos)
+	{
+		assert(BF > pos);
+		return data[pos];
+	}
+
+	[[nodiscard]] constexpr SemanticElement const& operator[](std::size_t pos) const
+	{
+		assert(BF > pos);
+		return data[pos];
+	}
+};
 }  // namespace ufo
-
-namespace std
-{
-inline std::ostream& operator<<(std::ostream& out, ufo::Semantic s)
-{
-	return out << s.label << ": " << s.value;
-}
-}  // namespace std
-
-#endif  // UFO_MAP_SEMANTIC_HPP
+#endif  // UFO_MAP_SEMANTIC_BLOCK_HPP
