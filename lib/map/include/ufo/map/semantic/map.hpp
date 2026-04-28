@@ -47,6 +47,7 @@
 #include <ufo/container/tree/tree.hpp>
 #include <ufo/map/block.hpp>
 #include <ufo/map/semantic/block.hpp>
+#include <ufo/map/semantic/propagation_criteria.hpp>
 // #include <ufo/map/semantic/predicate.hpp>
 #include <ufo/map/type.hpp>
 #include <ufo/utility/type_traits.hpp>
@@ -160,6 +161,35 @@ class SemanticMap
 		};
 
 		derived().recursParentFirst(node, node_f, block_f, update_f, propagate);
+	}
+
+	//
+	// Propagation criteria
+	//
+
+	[[nodiscard]] constexpr SemanticPropagationCriteria semanticPropagationCriteria()
+	    const noexcept
+	{
+		return prop_criteria_;
+	}
+
+	void semanticSetPropagationCriteria(SemanticPropagationCriteria prop_criteria,
+	                                  bool                      propagate = true)
+	{
+		if (semanticPropagationCriteria() == prop_criteria) {
+			return;
+		}
+
+		prop_criteria_ = prop_criteria;
+
+		// Set all inner nodes to modified
+		// FIXME: Possible to optimize this to only set the ones with children
+		// TODO: Enable below
+		// derived().setModified();
+
+		// if (propagate) {
+		// 	derived().propagateModified();
+		// }
 	}
 
  protected:
@@ -276,9 +306,20 @@ class SemanticMap
 
 		Semantic value{};
 		for (std::size_t i{}; BF > i; ++i) {
-			value.label |= children_block[i].semantic.label;
-			// TODO: Propagate value criteria? Highest, lowest, average, none?
-			value.value = std::max(value.value, children_block[i].semantic.value);
+			switch (prop_criteria_) {
+				case SemanticPropagationCriteria::SUMMARY: {
+					value.label |= children_block[i].semantic.label;
+					// TODO: Propagate value criteria? Highest, lowest, average, none?
+					value.value = std::max(value.value, children_block[i].semantic.value);
+					break;
+				}
+				case SemanticPropagationCriteria::MAX_VALUE: {
+					if (children_block[i].semantic.value > value.value) {
+						value = children_block[i].semantic;
+					}
+					break;
+				}
+			}
 		}
 
 		sb.semantic = value;
@@ -357,6 +398,10 @@ class SemanticMap
 	{
 		out << "Semantic: " << semantic(node);
 	}
+
+ private:
+	// Propagation criteria
+	SemanticPropagationCriteria prop_criteria_ = SemanticPropagationCriteria::SUMMARY;
 };
 
 template <std::size_t Dim, std::size_t BF>
